@@ -1,0 +1,719 @@
+[00:01] Buenas noches.
+[00:03] Buenas noches.
+[00:06] Buenas noches, doctor. ¿Cómo está? Bien.
+[00:08] Ustedes
+[00:08] bien
+[00:10] bien.
+[00:12] Más que nada para no quitarle mucho
+[00:14] tiempo, bueno, queríamos hacer esta
+[00:16] llamada con usted más que nada para
+[00:18] preguntarle algunas opiniones de usted
+[00:20] sobre cómo siente ciertos elementos en
+[00:23] el simet.
+[00:27] Ciertos elementos en el simet.
+[00:29] Sí. más que nada funcionalidades, ¿no?
+[00:32] Mm.
+[00:33] Ah, ibas a comentar algo, ¿eh, Miguel?
+[00:35] Sí, más que nada era lo del monitor del
+[00:39] CIMET. Ya ve que este nos había
+[00:40] comentado que pues podría ser un mejor
+[00:43] diseño.
+[00:45] En este caso, pues queremos ver su
+[00:47] opinión acerca de diferentes pues
+[00:49] pregunta preguntas que le vamos a
+[00:51] realizar a usted para hacer un debido
+[00:53] buen análisis.
+[00:56] Ya puedes continuar.
+[01:10] Perdón, perdón, la aplasté mal aquí.
+[01:15] es okay.
+[01:23] Es
+[01:33] están viendo la pantalla, ¿verdad? Sí,
+[01:36] sí. Entonces, si me voy a esto aquí, me
+[01:40] voy a regresar,
+[01:44] voy a entrar con mi administrador.
+[01:52] Entonces, yo tengo eh vamos a poner un
+[01:55] caso clínico
+[01:56] eh como este. Aquí, por ejemplo,
+[02:01] esta carpeta yo la armé que es el eco,
+[02:05] pero haz cuenta que no me da la opción
+[02:07] aquí para empezar si jalar este para acá
+[02:13] o si grabo un caso aquí borrarlo o
+[02:16] cambiar otra carpeta. O sea, lo básico
+[02:19] que a veces tiene uno eh con con lo que
+[02:24] le harían en en este en cualquier
+[02:26] computadora, ¿no? Entonces, esto no me
+[02:29] no me lo está dando yo le decía, yo
+[02:32] ocupo carpetas a veces para diferenciar
+[02:35] esto y por ejemplo quedó grabado estos
+[02:37] donde dice sin carpeta, quedaron
+[02:39] grabados todos los con los que estoy
+[02:40] trabajando ahorita. Pero cuando yo
+[02:43] quiero hacer un nuevo
+[02:45] este caso, por ejemplo, este que fue
+[02:48] nada más así ficticio, este de fiebre,
+[02:50] este sale aquí, pero obviamente yo no
+[02:54] puedo mover este de fiebre a otra
+[02:56] carpeta o o cambiarlo a otra parte, ¿no?
+[02:59] Eso sería un detallito que tiene o uno
+[03:02] de los detalles que tiene esto.
+[03:05] Ahora, el yo tener estos casos, por
+[03:09] ejemplo, si yo me pongo, me voy a ir acá
+[03:12] atrás,
+[03:15] voy a salir aquí.
+[03:18] Es
+[03:23] ya.
+[03:24] Entonces ahorita estamos trabajando con
+[03:26] este. Vemos este paciente que tiene un
+[03:30] infarto miocardo. Okay. Entonces
+[03:37] ustedes dicen les molesta,
+[03:43] está grave o no está grave. No, hoy de
+[03:45] hecho me dijeron, "Doctor, no suena
+[03:46] nada." Por ejemplo, aquí está en
+[03:48] Asístole porque en el caso ahorita lo
+[03:51] modifiqué, quedó en asistístol en el
+[03:53] último caso, ¿no? Sin embargo, esto este
+[03:57] monitor que estamos viendo aquí pues es
+[03:59] muy para mí muy convencional, ¿no? O
+[04:02] sea, como digamos eh comparado con el
+[04:06] que ustedes pusieron ahí, pues está un
+[04:08] poquito más más moderno.
+[04:10] Y una de las cosas que tiene este
+[04:13] monitor es el hecho de que no puedo, por
+[04:17] ejemplo,
+[04:19] eh, ¿qué voy a hacer? Bueno, voy a
+[04:22] meter, me voy a quedar
+[04:24] infarto miocardio. Voy a quedar aquí.
+[04:29] Aquí está
+[04:31] y voy a abrir una nueva pestaña acá.
+[04:38] Ya voy. No sé si espera. Está
+[04:44] es infarto.
+[04:47] Entonces yo desde aquí abro otro y desde
+[04:51] aquí le estoy voy a modificar.
+[04:55] Entonces lo que ustedes están viendo
+[04:57] ahí, yo lo voy a modificar. Y aquí, por
+[05:01] ejemplo, ustedes están viendo que ya se
+[05:03] va a modificar el ritmo, ¿no? Okay.
+[05:08] Se dan cuenta ahí.
+[05:10] Sí,
+[05:10] sí,
+[05:11] ya no estaba en asistístole que estaba
+[05:13] la pura rayita ahí. ¿Cómo lo hago?
+[05:16] Entonces les voy a dejar de presentar
+[05:18] este y
+[05:21] entonces yo me voy al administrador
+[05:24] y en el administrador aquí yo le cambio
+[05:27] en esto. Aquí me dieron oportunidad de
+[05:31] poner una taquicardia, asístole,
+[05:34] fibrilación, depresión, elevación del
+[05:37] cemento CT, pero hay más parámetros que
+[05:40] se necesitan aquí como las algunas
+[05:44] bloqueos de rama, otras arritmias que se
+[05:47] podrían integrar en esta zona. Este es
+[05:50] un panel que yo estoy modificando desde
+[05:53] aquí y este se modifica en tiempo real.
+[05:57] Sale, por ejemplo, si yo este lo
+[06:00] modifico, llega hasta el uno. Realmente
+[06:03] pues puede tiene, pero llega hasta el
+[06:05] cero. Hay uno que no llega hasta abajo.
+[06:08] Este creo que llega hasta el 60
+[06:12] y llega hasta el 40, ¿no? Pues esto
+[06:14] puede llegar a ceros también cuando ya
+[06:17] está muerto el paciente. Igual el 36.1
+[06:20] llega hasta 35.4, cu, pero se podría ir
+[06:24] hasta cero y la oxigenación aquí, esa sí
+[06:28] me la da hasta el cero, ¿no? Entonces,
+[06:31] esto pues obviamente si lo vemos ahorita
+[06:33] en el otro lo vamos a ver ya
+[06:36] actualizado, ¿no? Entonces esto, por
+[06:38] ejemplo, este panel que estamos viendo
+[06:41] aquí donde están los ritmos icardianos y
+[06:43] que estamos viendo ritmo sinusal,
+[06:46] taquicardia, todo esto, esto sí se
+[06:49] podría modificar.
+[06:52] Y obviamente le daría pues básicamente
+[06:57] eh a las personas que utilizan esto les
+[07:00] interesa mucho ver otros otros ritmos
+[07:02] cardíacos además del del que estamos
+[07:05] utilizando ahorita, ¿no? Y ahorita les
+[07:08] presento otro
+[07:12] que es el que están viendo ahorita este.
+[07:16] Entonces ese monitor es el que vemos
+[07:19] normalmente los muchachos. Además, ahí
+[07:21] les dice ya alerta de hipotermia, ¿no? O
+[07:24] sea, ya les orienta un poquito también
+[07:27] al diagnóstico. Tampoco está mal, pero
+[07:29] creo que esta se podría ver algo un
+[07:31] poquito más, no sé, más estético, más
+[07:34] bonito.
+[07:36] Okay.
+[07:40] Okay. Eh, bueno, aquí más que nada la
+[07:41] voy a decir como yo lo entendí. Eh,
+[07:43] ahorita creo que sí nos está mostrando
+[07:45] lo que ve el estudiante, ¿no? Esta
+[07:47] pantalla es la que ve el estudiante.
+[07:49] Sí, exactom. y la pantalla anterior
+[07:51] donde usted modifica todos los
+[07:52] parámetros, eso es desde el
+[07:54] administrador, desde su cuenta.
+[07:56] Hm. Exacto.
+[07:57] Eh, bueno, yo creo que entendí que
+[08:00] también a usted le gustaría que en el
+[08:01] apartado del administrador se puedan
+[08:04] modificar aún más los parámetros, ¿no?
+[08:07] Eh, recuerdo que mencionó algo de que
+[08:09] cierto de este parámetro, perdón, no
+[08:12] recuerdo el nombre, que llegara a cero.
+[08:14] Eso eso sí le gustaría que le permitiera
+[08:17] el sistema.
+[08:19] Sí, sería lo ideal porque obviamente
+[08:21] cuando ya el paciente pues está eh en en
+[08:25] una sístolo, pues no tiene pulso de
+[08:27] nada, ¿no? Y ahí pues me sigue
+[08:28] apareciendo la presión arterial en 60 40
+[08:31] y pues debería estar en cero.
+[08:34] Y también, bueno, yo recuerdo que eh la
+[08:37] sesión pasada que estuvimos con usted
+[08:39] nos mencionó que este monitor sí le
+[08:43] sentía como un juego y bueno, no sé qué
+[08:46] qué aspectos lo hacen pensar eso.
+[08:50] No, lo lo sentía como un juego viejito.
+[08:55] Es decir, eh si yo veo este monitor así,
+[09:00] pues me hace pensar en un monitor
+[09:02] viejito, ¿no? como que ya tengo años con
+[09:04] este monitor. Entonces, yo lo que le
+[09:07] decía, por ejemplo, el que me ponían por
+[09:09] ahí en uno de los de las gráficas, pues
+[09:11] obviamente se miraría
+[09:14] se mira mucho más este
+[09:17] pues más, ¿cómo cómo le puedo decir? Más
+[09:20] nuevo, más profesional, ¿no? Okay.
+[09:21] Sí. más moderno.
+[09:24] Entonces, lo que a usted le gustaría que
+[09:26] en esta parte del monitor sí fuera algo
+[09:28] más moderno, ¿no? Algo con más aspectos,
+[09:31] pues se se miraría más bonito. Sí, sí.
+[09:34] Eh,
+[09:35] porque la vez pasada nosotros nosotros
+[09:37] solamente le mostramos como un boceto.
+[09:40] Igual aún no hemos definido qué puntos
+[09:43] eh así como el oxígeno y todos estos,
+[09:45] qué puntos debe de tener, ¿no?
+[09:48] No sé si también nos pudiera mencionar
+[09:50] cuáles sí son los puntos que debería de
+[09:52] tener este.
+[09:56] Por ejemplo, los monitores, así como lo
+[09:58] están viendo,
+[10:01] este tiene la frecuencia cardíaca, que
+[10:03] es el que está en 72. Viene bien la
+[10:06] saturación de oxígeno, el que sigue
+[10:09] abajo que está en 0% ahí, ¿no? Porque
+[10:11] eso lo podemos modificar desde el
+[10:13] administrador. Vamos a modificarlos acá
+[10:15] para que se vean un poquito mejor los
+[10:17] números.
+[10:20] es desde
+[10:31] supone que ahí debería de estar
+[10:35] actualizado.
+[10:42] Okay, ahí está. Entonces, lo que están
+[10:44] viendo ahorita ahí eh está la presión
+[10:48] arterial que es es esta 72, la
+[10:52] saturación de oxígeno 98, tenemos la
+[10:56] presión arterial, tenemos la saturación
+[11:00] del CO2, que es lo que debe estar aquí,
+[11:02] es perdón, es 38 sale. Y debemos de
+[11:07] tener por aquí,
+[11:10] pues debería venir por aquí, pero no lo
+[11:11] tengo, al menos no lo veo. La este
+[11:17] la temperatura del paciente, ¿no? Que
+[11:20] eso es otro dato que también le podemos
+[11:22] agregar aquí. digo, podría estar aquí,
+[11:24] ¿no? Pero con estos básicamente son los
+[11:27] son los valores más comunes que llegamos
+[11:29] a a presentar con estos pacientes en
+[11:32] estos monitores, ¿no?
+[11:36] Eh, le voy a presentar la versión que
+[11:38] teníamos no más para que la vea para ver
+[11:40] qué opine. ¿Qué opina? Perdón.
+[11:48] Permítane.
+[11:59] Creo que ya estoy presentando.
+[12:02] No sé si se ve.
+[12:07] Sí, aquí en la pantalla. Sí.
+[12:09] Mm. Sí. Y bueno, esta es la versión que
+[12:12] le habíamos presentado anteriormente,
+[12:13] pero sí como se lo mencioné, ¿no? Que
+[12:15] más que nada sí era como un pequeño
+[12:17] boceto.
+[12:20] Igual ya con los puntos que ahorita nos
+[12:22] mencionó, eso sí los vamos a tener muy
+[12:23] en cuenta para empezar a diseñar el
+[12:27] boceto y también buscar referencias para
+[12:29] en la próxima sesión mostrarle ya eh
+[12:33] algunos bocetos ya para que nos
+[12:35] mencionen, ¿no?, que si este le gusta
+[12:37] más, esto le gusta más de este y así.
+[12:41] Pero sí como mencioné que esto más
+[12:42] básicamente es un pequeño boceto
+[12:47] y también quiero preguntarle algo. Oh,
+[12:50] perdón, perdón.
+[12:52] Es que quiero agrandarlo porque no lo
+[12:54] veo muy bien. Ahí está.
+[13:03] Es
+[13:09] okay. De ahí lo de ahí cambio cambio
+[13:11] presión. Lo voy a cambiar yo ahí.
+[13:15] Okay. Pero
+[13:17] eh si te diste cuenta, digo, [carraspeo]
+[13:21] no te estoy diciendo que no, pero sí es
+[13:25] más fácil tu boceto que lo que tengo
+[13:27] ahorita.
+[13:32] Eh, esto más que nada sí es un boceto,
+[13:34] ¿no? Porque como no teníamos estos
+[13:35] comentarios que nos está diciendo, sí,
+[13:37] sí, para el próximo boceto sí para
+[13:40] tenerlos en cuenta ya más fiel a lo que
+[13:42] usted necesita.
+[13:44] Pero, por ejemplo, esto que dices
+[13:46] evaluar la situación, activar ayuda,
+[13:49] iniciar compresiones, coordinación,
+[13:51] preparación del DEA, resolver en equipo.
+[13:54] Es que una de las cosas que tienen a
+[13:56] veces es que cuando ven un monitor
+[13:58] solamente están pensando en paro
+[14:01] cardíaco, ¿no? Y y no es así, pues.
+[14:04] Entonces, eh no quisiera que solamente
+[14:07] pensaran que cuando abran este monitor
+[14:10] estén pensando solamente el paciente va
+[14:12] a caer en un impacto miocardio. O sea, a
+[14:15] cualquier paciente se le pone un monitor
+[14:17] y lo estás monitorizando. Un paciente
+[14:19] con una crisis hipertensiva también lo
+[14:20] vas a tener ahí. Un paciente con un poco
+[14:23] agudizado o un asma.
+[14:26] Entonces aquí, por ejemplo, te en la
+[14:29] parte que tienes ahí protocolo de RCP,
+[14:31] pues me estás me estás dando un monitor
+[14:33] solamente para eso. Pues
+[14:38] sí, creo que ya le entendí. Eh, bueno,
+[14:40] igual eso sí lo tendremos en cuenta,
+[14:41] ¿no? Ya para darle en la siguiente
+[14:43] versión un monitor, no solo de el paro
+[14:46] cardíaco,
+[14:50] es que los los
+[14:52] monitores, eh, por ejemplo, si tú te
+[14:55] pones a a ver, te voy a dejar este
+[15:00] compartir. Bueno, tú tienes ahí,
+[15:04] eh, deja le dejo de compartir para que
+[15:05] le deje
+[15:16] a ver si
+[15:23] Entonces, hm,
+[15:28] si te fijas, todos estos monitores,
+[15:29] algunos son portátiles.
+[15:32] otros son fijos, tal, ¿no? Entonces, no
+[15:35] quiere decir que un monitor cardíaco,
+[15:38] por ejemplo, este está bonito. Fíjas
+[15:41] este que estoy aplastando aquí,
+[15:44] este se ve mucho más mucho más moderno.
+[15:47] Esa es lo que te decía yo, que me parece
+[15:49] que yo tuviera un Atari así con un
+[15:52] monitor viejito como puede ser este que
+[15:54] está acá en esta señalización que estoy
+[15:57] haciendo, ¿no? Entonces, estos ya están
+[15:59] un poquito más más modernos, ¿no?
+[16:01] Obviamente, y no necesariamente un
+[16:04] monitor que yo estoy teniendo va a ser
+[16:07] solamente para pacientes que estén
+[16:09] infartados. Estos monitores portátiles,
+[16:12] como este, por ejemplo, lo traemos para
+[16:15] un lado, para otro para diferentes
+[16:17] pacientes y estamos posiblemente
+[16:19] haciendo seguimientos. Hay unos que son
+[16:22] monitores obviamente más para el áreas,
+[16:24] por ejemplo, este, más para un área de
+[16:28] eh, ¿cómo se llama? De terapia
+[16:30] intensiva, urgencias, ¿no? Sin embargo,
+[16:33] pues un monitor pues me sirve para
+[16:35] muchas cosas. Hay monitores que este,
+[16:37] por ejemplo, lo tienen en el área de
+[16:39] cirugía, pero también lo puedes tener en
+[16:42] el área de este de urgencias, terapia e
+[16:48] inclusive para bajo valoración, ¿no?
+[16:51] Pacientes que tienen algunos monitores
+[16:52] portátil y no más aquí estamos dando un
+[16:55] seguimiento al paciente, ¿no? Por eso en
+[16:59] cuanto yo tengo un paciente, el paciente
+[17:02] es dinámico. Entonces, ¿a qué me refiero
+[17:05] con eso?
+[17:06] Eh, yo voy a compartirte ahora lo de
+[17:09] administrador.
+[17:13] Eh,
+[17:16] entonces si yo me voy aquí a esta
+[17:19] carpeta y yo agarro mi paciente y tiene
+[17:23] una emergencia hipertensiva, hacer el
+[17:26] caso de esto y lo voy a
+[17:28] lo voy a editar.
+[17:30] Entonces, aquí, por ejemplo, yo ya tengo
+[17:33] los valores de la presión arterial de mi
+[17:35] paciente. Entonces, el el médico lo que
+[17:38] hace ahí es darle el tratamiento.
+[17:42] Entonces, yo dependiendo de lo que ellos
+[17:45] le den, pues yo modifico. Mira, nada más
+[17:47] le estoy moviendo aquí. Entonces, si tú
+[17:49] me lo pones más difícil que esto, pues
+[17:51] para mí no va a ser práctico. Entonces,
+[17:53] yo nada más rápido le dio el
+[17:55] medicamento, a ver qué tanto modifico de
+[17:57] la presión y yo. Entonces, él en
+[17:59] automático va a ver la modificación de
+[18:01] la presión arterial que está teniendo,
+[18:03] ¿no? Sí, me doy a entender en esa
+[18:05] situación.
+[18:06] Sí. Entonces ahorita, bueno, más que
+[18:09] nada lo que yo entendí es que usted sí
+[18:12] se siente cómodo, ¿no?, con esta
+[18:13] ventana, con con relación a lo que le
+[18:15] puede modificar, pero que hacen falta
+[18:18] más valores.
+[18:20] me hacen falta que los valores sean los
+[18:23] correctos, que hay unos que no los puedo
+[18:25] bajar a cero y que eh estos una vez que
+[18:30] se se establezcan allá, pues obviamente
+[18:33] este se ve en un monitor mucho mejor y
+[18:35] que además en esta zona de ritmos
+[18:37] cardíacos aquí hacen falta otros ritmos.
+[18:45] Estos ya están preestablecidos, ¿no? Que
+[18:46] si le pican eh se cambian
+[18:48] automáticamente arriba.
+[18:50] Exactamente. Estos ya están
+[18:51] preestablecidos. El muchacho que lo hizo
+[18:54] el semestre pasado los hizo así. Ahí
+[18:56] estaba rapidito los no sé dónde los
+[18:58] bajó, los sacó y los puso. Digo, para
+[19:02] salir del paso estaba muy bien, pero si
+[19:05] ya nos vamos, pues hay varios ritmos que
+[19:09] obviamente todavía faltarían aquí.
+[19:14] Eh, ahorita le puedo hacer una
+[19:15] propuesta, no sé si le parezca bien. Lo
+[19:17] que podemos hacer nosotros, aparte de lo
+[19:19] que ya mencionó, ¿no? De hacer
+[19:20] modificaciones en este panel que le
+[19:23] permita
+[19:24] personalizar más, agregar más casos de
+[19:27] estos, podemos nosotros también agregar
+[19:30] algunos ritmos cardíacos extras. Eh,
+[19:34] bueno, por mi parte y también por la
+[19:36] parte de mis compañeros aún no sabemos
+[19:37] muy bien los valores correctos de, por
+[19:40] ejemplo, ¿no?, un ritmo inusual,
+[19:41] taquicardio.
+[19:43] Eh, nosotros podemos buscar algunos
+[19:47] ritmos de estos cardíacos, pero sí
+[19:49] necesitaríamos que
+[19:52] que estos sean bueno cuando los tengamos
+[19:55] si nos pudiera ayudar a verificarlos.
+[19:58] Sí, claro. De eso se trata. Por ejemplo,
+[20:00] cuando él me los puso, yo ya los revisé
+[20:02] y dije, "Bueno, está bien." De hecho, de
+[20:05] los que tiene aquí el ST con elevación,
+[20:08] viene con una moscadita ahí a diferencia
+[20:11] de otros, pero al final de cuentas sigue
+[20:13] siendo un ritmo, una elevación del
+[20:15] segmento CT, así que no se pierde la
+[20:17] parte pedagógica en cuanto a eso.
+[20:19] Obviamente eso lo revisaría. Claro que
+[20:21] sí.
+[20:24] Sí, porque ahorita el plan que yo tengo
+[20:27] para esto, para esta nueva
+[20:28] funcionalidad, es eso, ¿no? Primeramente
+[20:30] agregar los nuevos valores que le
+[20:33] gustaría ver, ¿no? Aparte de los que ya
+[20:35] están implementados
+[20:37] para después también eh conforme ya
+[20:40] estén estos valores nosotros empezar a
+[20:42] buscar otros ritmos cardíacos y ya
+[20:45] mencionarle, ¿no?, de que ah, tenemos
+[20:46] estos nuevos y pedirle, ¿no?, de a
+[20:50] cuáles serían los valores para darle a
+[20:52] estos nuevos ritmos para verificar, ¿no?
+[20:55] Para que esos valores sí sean reales.
+[20:58] Sí, básicamente los más comunes que
+[21:01] hacen falta aquí es la fibrilación
+[21:05] auricular. Hay la fibrilación
+[21:06] ventricular, pero falta el FA,
+[21:09] fibrilación auricular y faltaría por ahí
+[21:13] eh sobre todo los bloqueos.
+[21:15] bloqueos grado uno, grado 2, grado 3 o
+[21:18] se conoce como Mobit 1, Mobit 2 o Mobit
+[21:21] 3. Sale. Yo creo que esos esos cuatro
+[21:24] son los más hay más, ¿no? Pero son los
+[21:27] más básicos que nos faltaría aquí de los
+[21:31] de los ritmos cardíacos o de los eh
+[21:35] patrones que se que se presentan
+[21:37] electrocardiográficos, pues serían los
+[21:38] más comunes, ¿no? para no hay muchas
+[21:41] cosas que que son exclusivamente de
+[21:44] cardiología que a veces no se van a ver
+[21:45] aquí, ¿no? En esos.
+[21:51] Okay, entonces creo que sí ya por esta
+[21:53] parte del monitor sí ya nos quedó muy
+[21:55] claro, pero no sé si creo que alguna de
+[21:58] mis compañeros le va a preguntar otra
+[22:00] cosa.
+[22:01] Okay.
+[22:02] Sí, doctor. Eh, yo tengo una pregunta
+[22:04] más que nada porque la vez pasada le
+[22:08] habíamos mostrado como un boceto o
+[22:10] prototipo de una
+[22:13] y una pantalla de generación de
+[22:14] reportes. Usted nos había comentado que
+[22:16] ya lo tenía en el CIMET.
+[22:19] Sin embargo, no lo encontramos o
+[22:22] queremos preguntarle si usted lo realiza
+[22:23] a mano, porque verdad no
+[22:26] a ver este yo no yo no dije que lo que
+[22:29] lo tenía en el CET, dije que yo ya tenía
+[22:33] una rúbrica.
+[22:35] Ah, okay. Y esa usted la llena mano. Sí,
+[22:37] eso yo tengo una rúrica que y les dije,
+[22:41] si la necesitan se las envío.
+[22:44] Okay. Pero en este caso, ¿a usted
+[22:47] le gustaría que que se que se siguiera
+[22:50] ese formato en el sistema o usted le
+[22:52] gustaría igual seguirlo haciendo en lo
+[22:54] que es pues a mano?
+[22:56] Bueno, mira, te voy a contestar bien
+[22:58] fácil. ¿De qué se trata esto?
+[23:02] es mejorar el sistema para que sea más
+[23:03] fácil para
+[23:06] maestro. Pues de eso vives, vas a vivir
+[23:08] tú, de facilitarle la vida, de
+[23:10] felicitarle la vida a los demás.
+[23:12] Sí, sí, sí. No más que pues, o sea, no
+[23:14] sé sus preferencias, esa es mi duda
+[23:17] porque nosotros con gusto lo lo
+[23:18] realizamos, pero pues también debo de
+[23:21] saber sus preferencias, ¿qué tal si no
+[23:22] le gusta o no?
+[23:24] No, sí, sí, sí. O sea, al final de
+[23:25] cuentas, el punto que estamos aquí
+[23:27] trabajando es la digitalización de todo,
+[23:29] ¿no? Hacerlo lo más práctico, lo más
+[23:32] pragmático, lo más viable posible, lo
+[23:36] menos engorroso en trabajo, lo que te
+[23:39] genere menos carga de todo, ¿no? Es esa
+[23:42] es la parte, ¿no? Claro que sí. O sea,
+[23:44] si yo me dices, "Oye, doctor, pásame por
+[23:47] ahí tengo la rúbrica, n más la busco y
+[23:50] te mando la rúbrica, que es algo bien
+[23:51] sencillo y es decir, ¿sabes que queda
+[23:53] aquí como un checklist?
+[23:55] Ahora, el punto que quede ahí como un
+[23:58] checklist es que, por ejemplo, yo cuando
+[24:04] acuden los muchachos,
+[24:06] eh, ellos trabajan por equipos,
+[24:10] ¿sí? Entonces, si yo tengo no sé el caso
+[24:15] de ahorita el que estamos teniendo de
+[24:17] infarto algún miocardio o si les abrí
+[24:20] otro, no me acuerdo ahorita. Entonces,
+[24:22] ese que tengo abierto ahí, pues yo voy a
+[24:24] tener al menos
+[24:27] entre cuatro
+[24:29] eh, al menos tres,
+[24:33] tres, imagínate, son tres 3 horas. De
+[24:37] esas 3 horas mínimo son tres equipos por
+[24:39] hora.
+[24:41] Entonces son nueve reportes.
+[24:44] Eh, el punto es cómo cómo encajarían
+[24:48] esos reportes, cómo cómo quedarían
+[24:53] dentro del
+[24:56] del
+[24:59] caso, en qué parte quedaría el reporte y
+[25:02] además ese reporte
+[25:05] este pues tampoco quiero que me esté
+[25:07] quedando todos los semestres, ¿no? O
+[25:08] sea, al final de cuentas puede ser que
+[25:10] lo tenga el reporte, cómo lo lleno, si
+[25:12] me da la oportunidad de poner el
+[25:15] subgrupo 4411
+[25:18] 4412
+[25:20] y en este en esto de infarto tiene este
+[25:26] reporte aquí le salió tal, ¿no? Pero que
+[25:29] quedara ahí mismo en una ventanita, no
+[25:32] sé, del mismo caso clínico y que ese
+[25:35] pues ya tenga la opción de que se se
+[25:37] tenga ahí y una vez que se acabe el
+[25:40] semestre yo tenga la oportunidad de
+[25:41] borrarlos y agregar otros, ¿no? Pero
+[25:43] pues ahí tendría que tener el nombre del
+[25:48] equipo, el número del equipo.
+[25:50] No sé si tenga que ponerlos de
+[25:53] preferencia también los integrantes, que
+[25:55] son a veces hasta cuatro o cinco
+[25:58] integrantes por equipo, y una vez de
+[26:00] eso, pues emitir el checklist, ¿no? Y
+[26:03] qué tan de pues es una escala de kil más
+[26:06] o menos y qué tan viable es rápido poder
+[26:09] llenar esa escala, ¿no?
+[26:13] Aquí más que nada de esta idea, bueno,
+[26:15] solo voy a comentar esto ya para que
+[26:17] Miguel siga. Es la idea que teníamos de
+[26:19] los reportes era más que nada hacer como
+[26:22] un reporte y que se genere como PDF ya
+[26:25] para que usted lo tenga ahí y pues sea
+[26:27] de fácil acceso,
+[26:28] pero creo que igual mi compañero Miguel
+[26:30] iba a comentar más de eso.
+[26:33] Okay.
+[26:36] Pues más que nada queríamos pues primero
+[26:38] que nos enviara de favor lo que es la
+[26:40] rúbrica. en base a esa rúbrica,
+[26:43] eh, pues veremos cómo se va a desglosar
+[26:45] todo lo que es la pantalla, ¿no?
+[26:49] Y pues también estamos viendo si se
+[26:53] podría manejar eso que usted nos dice de
+[26:55] por grupos y demás, manejarlo por medio
+[26:58] de carpetas, manejar por medio de
+[26:59] carpetas los grupos y que esa carpeta se
+[27:02] desglose por equipos.
+[27:04] Pero pues vamos a tener cuidado con de
+[27:06] que todo funcione bien y bueno, más que
+[27:09] nada que a usted le guste y sea posible
+[27:12] ejecutarlo.
+[27:14] Sí, aquí lo importante es que se pueda
+[27:17] hacer ahí mismo el reporte, pero sobre
+[27:19] todo que pues que quede mismo.
+[27:23] Obviamente el reporte se tiene que
+[27:25] generar y tendría que quedar
+[27:28] dentro del mismo este escenario, ¿no?,
+[27:32] que se hizo, para que se sepa que se
+[27:35] hizo la simulación y que estos fueron
+[27:37] participantes y que eso fue lo que la
+[27:39] calificación que obtuvieron en la
+[27:40] rúbrica de los participantes de esa
+[27:42] simulación.
+[27:44] Sí, me más o menos me
+[27:46] como un tipo historial se refiere.
+[27:48] Eh, sí, pues, o sea, el punto es que,
+[27:50] por ejemplo, si yo voy a abrir eh, vamos
+[27:54] a dejar de compartir esto. Entonces, si
+[27:58] yo tengo ahorita este eh este estoy
+[28:03] viendo nada, no te compartir nada, pero
+[28:06] este
+[28:10] si yo estoy viendo este el simet y me
+[28:12] voy a meter aquí, ¿vale? Entonces ellos
+[28:16] abren esto punto en automático
+[28:20] y obviamente empiezan a empiezan a
+[28:23] trabajar. Okay.
+[28:27] Entonces, el reporte que ellos hagan en
+[28:30] dónde lo lo o sea el reporte que sería
+[28:34] de ese grupo, ¿dónde lo llenaría?
+[28:35] puesto, o sea, sería otra otra ventana
+[28:39] aquí dentro de estas ventanas y en la
+[28:43] cual yo lo lleno rapidito y y queda aquí
+[28:46] grabado y se pueda quitar o quedaría en
+[28:51] la zona de administración, o sea, ahí
+[28:53] pues sería ustedes que me digan cuál
+[28:57] sería la manera en que lo en cómo lo ven
+[28:59] mucho más factible para hacerlo, ¿no? Y
+[29:03] obviamente que tenga la ventaja pues que
+[29:05] se llene lo más sencillo y rápido, pero
+[29:08] que quede registrado pues dentro del
+[29:10] caso, ¿no? O sea, no tendría que no
+[29:13] tendría caso en buen sentido de que, por
+[29:16] ejemplo, yo abra esto meta aquí
+[29:20] la simulación
+[29:24] que parte del internet
+[29:27] me meto a simulación y que cuando me
+[29:30] meta aquí pues me abras otra carpeta
+[29:32] donde están las calificaciones para ir y
+[29:34] buscar qué calificación le puse a los
+[29:36] que hicieron el el de infarto, No,
+[29:42] eso que acaba de mencionar, eso sí no le
+[29:44] gustaría de que no.
+[29:46] Okay. Okay. Que no estuviera en otra
+[29:48] carpeta
+[29:48] porque tendría que buscar en otra
+[29:50] carpeta acá para ir a buscar eso.
+[29:53] Okay. Okay. Eh, eso sí. Bueno, si si nos
+[29:57] pondríamos a analizar, ¿no? Dónde
+[30:00] colocar esta nueva ventana de reportes,
+[30:02] porque más que nada sí lo que
+[30:03] necesitaríamos ver es lo que contiene su
+[30:06] formato actual para ver dónde lo podemos
+[30:09] poner, porque yo antes me imaginaba que
+[30:12] esto ponerlo en el panel en el panel de
+[30:14] administrador nada más, pero creo que
+[30:17] sí, conforme ya veamos su formato actual
+[30:20] ya podríamos decidir en dónde quedaría
+[30:22] mejor.
+[30:24] De hecho, de hecho te estoy dando la
+[30:26] idea porque abrí este, pero eh de hecho
+[30:29] lo ideal es que quedaran en el mío,
+[30:32] porque no sería lo ideal que ellos
+[30:34] abrieran esto y de repente vieran ahí
+[30:37] las calificaciones de sus otros amigos o
+[30:40] lo que estoy calificando en otros
+[30:42] grupos, ¿no? En otro equipo, perdón.
+[30:45] Y estos reportes al final sí el alumno
+[30:47] sí los ve.
+[30:49] Sí, porque en sí como tal nosotros al
+[30:53] final cuentas hacemos un debriefing. De
+[30:56] hecho, ustedes están viendo una parte
+[30:57] nada más de la simulación y en la
+[31:00] simulación la parte más importante es lo
+[31:03] que se hace al término de la simulación.
+[31:06] En la simulación te puede llevar 10, 15
+[31:07] minutos, pero cuando terminamos nos
+[31:11] puede llevar hasta una hora el
+[31:12] debriefing
+[31:14] y ahí sí se pone más más pesado el
+[31:16] asunto. Por por darte una idea, hoy
+[31:20] salieron dos llorando y otros ahí medio
+[31:22] enojados y peleados eh de situaciones
+[31:25] que suceden, porque eso es como un doble
+[31:27] A en muchas cuestiones y ahí no permito,
+[31:30] ni se permite que ninguno de ustedes ni
+[31:32] nadie entre más que nosotros los que
+[31:34] participamos. porque ahí nos tenemos que
+[31:38] dar una idea de todas las cosas que
+[31:40] estamos haciendo bien, pero también las
+[31:41] cosas que podemos mejorar y las cosas
+[31:43] que están se haciendo mal, ¿no?
+[31:46] Entonces, obviamente ellos llevan una
+[31:47] retroalimentación de todo esto y pues
+[31:51] obviamente a veces sí hay técnicas que
+[31:54] son un poquito pesadas y fuertes y pues
+[31:56] obviamente eh sí llevan esa
+[31:58] retroalimentación de todo lo que estamos
+[32:00] diciendo en estos momentos.
+[32:04] Okay, entonces ya creo que con esto sí
+[32:06] tendríamos muy bien en claro cómo
+[32:08] diseñar esta nueva funcionalidad.
+[32:11] Igual si sí le podemos pedir
+[32:14] el formato actual que usted utiliza para
+[32:17] ver cómo lo podemos implementar. Sí,
+[32:18] claro. Ajá. Me mandan nada más al
+[32:20] WhatsApp, me mandan a qué correo lo
+[32:22] mando y ya se los mando al ratito.
+[32:23] Sí.
+[32:25] Mm.
+[32:28] Igual no sé si alguno de mis compañeros
+[32:29] quiere agregar algo.
+[32:34] No, yo estoy bien
+[32:35] por el momento. Yo estoy bien. O sea,
+[32:37] creo que ya supimos o bueno, más bien ya
+[32:41] recolectamos toda la información que
+[32:42] necesitamos para hacer un buen boceto y
+[32:46] se lo mostraremos en la siguiente
+[32:48] en la siguiente llamada. Creo que ya es
+[32:50] con la doctora Candalfi o demás, pero
+[32:53] pues igual este igual estaremos
+[32:55] considerando
+[32:57] todas sus opiniones, todo lo que esté
+[32:59] vea mal vea o vea bien, pues igual.
+[33:03] Muchas gracias.
+[33:04] Sí, hecho. Entonces me mandan ahí al al
+[33:07] WhatsApp el que correo se los mando y un
+[33:08] ratito se los mando. Sale.
+[33:10] Okay, ahorita se lo mandamos y muchas
+[33:11] gracias por este tiempo.
+[33:13] Sale. Cuídense.
+[33:15] Gracias. Buenas noches.

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIMED - Monitor Clínico Multiparámetro (Prototipo)</title>
+    <link rel="icon" type="image/png" href="../images/CimarronMedicoIndexIcon.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="monitor.css">
+</head>
+
+<body>
+
+    <!-- CONTENEDOR DEL MONITOR (MODO HOSPITALARIO) -->
+    <div class="monitor-wrapper" id="monitorRoot">
+
+        <!-- ══════════════ 1. HEADER / BARRA SUPERIOR ══════════════ -->
+        <header class="mon-header">
+            <div class="header-left">
+                <div class="patient-pill">
+                    <i class="bi bi-person-fill"></i>
+                    <span class="patient-type">Adulto</span>
+                </div>
+                <div class="header-item">
+                    <span class="lbl">Cama</span>
+                    <span class="val highlight">UCI - 01</span>
+                </div>
+                <div class="header-item">
+                    <span class="lbl">Paciente</span>
+                    <span class="val" id="disp-patient-name">Jorge Ruiz (21a)</span>
+                </div>
+                <div class="header-item">
+                    <span class="lbl">Modo Marcapasos</span>
+                    <span class="val">Sin Marcapasos</span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="alarm-banner" id="alarmBanner">
+                    <i class="bi bi-bell-fill me-1"></i>
+                    <span id="alarmBannerText">MONITOREO NORMAL</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="header-item">
+                    <span class="lbl">NBP Modo</span>
+                    <span class="val">Manual</span>
+                </div>
+                <div class="header-item">
+                    <span class="lbl">Alarmas</span>
+                    <span class="val text-success" id="alarmStatusText">ACTIVAS</span>
+                </div>
+                <div class="header-item">
+                    <span class="lbl">Fecha / Hora</span>
+                    <span class="val" id="liveClock">11 Sep 2026 08:35:12</span>
+                </div>
+                <div class="power-indicators">
+                    <i class="bi bi-plug-fill text-success" title="Conectado a CA"></i>
+                    <i class="bi bi-battery-charging text-success" title="Batería 100%"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- ══════════════ 2. CUERPO PRINCIPAL (ONDAS + VITALES) ══════════════ -->
+        <main class="mon-grid">
+
+            <!-- ── SECCIÓN IZQUIERDA: TRAZADOS FISIOLÓGICOS (ONDAS) ── -->
+            <section class="waves-column">
+
+                <!-- CANAL 1: ECG (VERDE) -->
+                <div class="wave-slot wave-ecg">
+                    <div class="wave-lead-info">
+                        <span class="lead-tag">II</span>
+                        <span class="gain-tag">&times;1</span>
+                        <span class="speed-tag">25 mm/s</span>
+                        <div class="cal-pulse"></div>
+                    </div>
+                    <canvas id="canvasECG" class="wave-canvas"></canvas>
+                </div>
+
+                <!-- CANAL 2: PLETH / SpO2 (CIAN) -->
+                <div class="wave-slot wave-spo2">
+                    <div class="wave-lead-info">
+                        <span class="lead-tag">Pleth</span>
+                    </div>
+                    <canvas id="canvasSPO2" class="wave-canvas"></canvas>
+                </div>
+
+                <!-- CANAL 3: CO2 / CAPNOGRAFÍA (AMARILLO) -->
+                <div class="wave-slot wave-co2">
+                    <div class="wave-lead-info">
+                        <span class="lead-tag">CO₂</span>
+                        <span class="speed-tag">Capno 12.5 mm/s</span>
+                    </div>
+                    <canvas id="canvasCO2" class="wave-canvas"></canvas>
+                </div>
+
+                <!-- CANAL 4: RESPIRACIÓN IMPEDANCIA (BLANCO) -->
+                <div class="wave-slot wave-resp">
+                    <div class="wave-lead-info">
+                        <span class="lead-tag">Resp</span>
+                        <span class="speed-tag">Impedancia</span>
+                    </div>
+                    <canvas id="canvasRESP" class="wave-canvas"></canvas>
+                </div>
+
+            </section>
+
+            <!-- ── SECCIÓN DERECHA: PANELES NUMÉRICOS DE SIGNOS VITALES ── -->
+            <section class="numerics-column">
+
+                <!-- 1. BLOQUE FC / PULSO (VERDE) -->
+                <div class="num-card card-hr" id="cardHR">
+                    <div class="num-header">
+                        <span class="param-title">HR / FC</span>
+                        <span class="param-unit">bpm</span>
+                    </div>
+                    <div class="num-body">
+                        <div class="limits-box">
+                            <span class="limit-hi">120</span>
+                            <span class="limit-lo">50</span>
+                        </div>
+                        <div class="main-value" id="valHR">75</div>
+                        <div class="sub-param">
+                            <span class="sub-lbl">Pulse</span>
+                            <span class="sub-val" id="valPulse">75</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BLOQUE SpO2 (CIAN) -->
+                <div class="num-card card-spo2" id="cardSPO2">
+                    <div class="num-header">
+                        <span class="param-title">SpO₂</span>
+                        <span class="param-unit">%</span>
+                    </div>
+                    <div class="num-body">
+                        <div class="limits-box">
+                            <span class="limit-hi">100</span>
+                            <span class="limit-lo">90</span>
+                        </div>
+                        <div class="main-value" id="valSPO2">98</div>
+                        <div class="sub-param">
+                            <span class="sub-lbl">PI</span>
+                            <span class="sub-val" id="valPI">4.2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 y 4. DUAL: CO2 / EtCO2 (AMARILLO) Y RESP (BLANCO) -->
+                <div class="num-row-dual">
+                    <div class="num-card card-co2" id="cardCO2">
+                        <div class="num-header">
+                            <span class="param-title">EtCO₂</span>
+                            <span class="param-unit">mmHg</span>
+                        </div>
+                        <div class="num-body">
+                            <div class="limits-box">
+                                <span class="limit-hi">45</span>
+                                <span class="limit-lo">30</span>
+                            </div>
+                            <div class="main-value" id="valCO2">38</div>
+                        </div>
+                    </div>
+
+                    <div class="num-card card-resp" id="cardRESP">
+                        <div class="num-header">
+                            <span class="param-title">RR / FR</span>
+                            <span class="param-unit">rpm</span>
+                        </div>
+                        <div class="num-body">
+                            <div class="limits-box">
+                                <span class="limit-hi">24</span>
+                                <span class="limit-lo">10</span>
+                            </div>
+                            <div class="main-value" id="valRR">16</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. BLOQUE PRESIÓN ARTERIAL NIBP / PANI (MORADO) -->
+                <div class="num-card card-nbp span-nbp" id="cardNBP">
+                    <div class="num-header">
+                        <span class="param-title">NBP / PANI</span>
+                        <span class="param-unit">mmHg</span>
+                        <span class="nbp-timestamp" id="nbpLastTime">Hace 2m</span>
+                    </div>
+                    <div class="num-body nbp-body">
+                        <div class="limits-box">
+                            <span class="limit-hi">160/90</span>
+                            <span class="limit-lo">90/50</span>
+                        </div>
+                        <div class="nbp-composite">
+                            <div class="nbp-bp" id="valNBP">120/80</div>
+                            <div class="nbp-map-group">
+                                <span class="map-lbl">MAP</span>
+                                <span class="map-val" id="valMAP">(93)</span>
+                            </div>
+                        </div>
+                        <div class="nbp-history">
+                            <span class="history-title">Historial</span>
+                            <div class="history-item"><span>08:33</span> 120/80 (93)</div>
+                            <div class="history-item"><span>08:15</span> 122/82 (95)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. BLOQUE TEMPERATURA CORPORAL (TURQUESA/VERDE CLARO) -->
+                <div class="num-card card-temp" id="cardTEMP">
+                    <div class="num-header">
+                        <span class="param-title">TEMP</span>
+                        <span class="param-unit">°C</span>
+                    </div>
+                    <div class="num-body">
+                        <div class="limits-box">
+                            <span class="limit-hi">37.8</span>
+                            <span class="limit-lo">35.5</span>
+                        </div>
+                        <div class="main-value" id="valTEMP">36.8</div>
+                        <div class="sub-param">
+                            <span class="sub-lbl">T1 Axilar</span>
+                            <span class="sub-val">Normotermia</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- ══════════════ 3. BARRA INFERIOR DE ACCIONES (TOUCH BUTTONS) ══════════════ -->
+        <footer class="mon-footer">
+            <button class="t-btn btn-silence" id="btnSilence" title="Silenciar alarma acústica">
+                <i class="bi bi-volume-mute-fill"></i>
+                <span id="silenceBtnLabel">Silence</span>
+            </button>
+
+            <button class="t-btn btn-pause" id="btnPauseAlarms" title="Pausar alarmas por 2 minutos">
+                <i class="bi bi-bell-slash"></i>
+                <span>Pause Alarms</span>
+            </button>
+
+            <button class="t-btn" id="btnNbpStart" title="Iniciar toma de presión">
+                <i class="bi bi-play-circle"></i>
+                <span>NBP Start/Stop</span>
+            </button>
+
+            <button class="t-btn" id="btnFreeze" title="Congelar ondas">
+                <i class="bi bi-snow"></i>
+                <span id="freezeBtnLabel">Freeze Waves</span>
+            </button>
+
+            <button class="t-btn" id="btnZero" title="Calibrar transductores">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>Zero</span>
+            </button>
+
+            <button class="t-btn" id="btnScreenSetup" title="Configurar pantalla">
+                <i class="bi bi-layout-text-window-reverse"></i>
+                <span>Main Screen</span>
+            </button>
+
+            <button class="t-btn btn-primary-act" id="btnFullscreen" title="Alternar pantalla completa para proyector">
+                <i class="bi bi-arrows-fullscreen"></i>
+                <span>Pantalla Completa</span>
+            </button>
+
+            <button class="t-btn btn-test-panel" id="btnToggleDrawer" title="Abrir panel de control para simular">
+                <i class="bi bi-sliders"></i>
+                <span>Control Docente</span>
+            </button>
+        </footer>
+
+    </div>
+
+    <!-- ══════════════ 4. PANEL FLOTANTE DE CONTROL DOCENTE (TESTING) ══════════════ -->
+    <aside class="control-drawer" id="controlDrawer">
+        <div class="drawer-header">
+            <h5><i class="bi bi-sliders me-2"></i>Panel de Control Clínico (Pruebas)</h5>
+            <button class="btn-close-drawer" id="btnCloseDrawer">&times;</button>
+        </div>
+
+        <div class="drawer-body">
+            <p class="drawer-desc">Modifica los parámetros en vivo para probar cómo reacciona el nuevo monitor.</p>
+
+            <!-- RITMOS ECG -->
+            <div class="ctrl-group">
+                <label class="ctrl-title"><i class="bi bi-activity text-success me-1"></i> Ritmo Cardíaco (ECG)</label>
+                <div class="rhythm-grid">
+                    <button class="btn-rhythm active" data-rhythm="sinusal">Sinusal (Normal)</button>
+                    <button class="btn-rhythm" data-rhythm="taquicardia">Taquicardia Ventricular</button>
+                    <button class="btn-rhythm" data-rhythm="fa">Fibrilación Auricular (FA)</button>
+                    <button class="btn-rhythm" data-rhythm="fv">Fibrilación Ventricular (FV)</button>
+                    <button class="btn-rhythm" data-rhythm="asistole">Asistolia (Línea Plana / 0)</button>
+                    <button class="btn-rhythm" data-rhythm="bloqueo1">Bloqueo AV Grado 1</button>
+                    <button class="btn-rhythm" data-rhythm="bloqueo2">Bloqueo Mobitz II</button>
+                    <button class="btn-rhythm" data-rhythm="bloqueo3">Bloqueo AV Completo (G3)</button>
+                    <button class="btn-rhythm" data-rhythm="st_elevacion">ST Elevación (Infarto STEMI)</button>
+                    <button class="btn-rhythm" data-rhythm="st_depresion">ST Depresión (Isquemia)</button>
+                </div>
+            </div>
+
+            <!-- SLIDERS CON SOPORTE DE CERO -->
+            <div class="ctrl-group">
+                <div class="slider-row">
+                    <label>Frecuencia Cardíaca (FC): <strong id="lblSliderHR">75</strong> bpm</label>
+                    <input type="range" id="sliderHR" min="0" max="220" value="75">
+                    <small class="text-muted">Permite bajar hasta 0 bpm</small>
+                </div>
+
+                <div class="slider-row">
+                    <label>Saturación SpO₂: <strong id="lblSliderSPO2">98</strong> %</label>
+                    <input type="range" id="sliderSPO2" min="0" max="100" value="98">
+                </div>
+
+                <div class="slider-row">
+                    <label>Presión Sistólica: <strong id="lblSliderSys">120</strong> mmHg</label>
+                    <input type="range" id="sliderSys" min="0" max="240" value="120">
+                </div>
+
+                <div class="slider-row">
+                    <label>Presión Diastólica: <strong id="lblSliderDia">80</strong> mmHg</label>
+                    <input type="range" id="sliderDia" min="0" max="150" value="80">
+                </div>
+
+                <div class="slider-row">
+                    <label>Capnografía (EtCO₂): <strong id="lblSliderCO2">38</strong> mmHg</label>
+                    <input type="range" id="sliderCO2" min="0" max="70" value="38">
+                </div>
+
+                <div class="slider-row">
+                    <label>Frecuencia Resp. (FR): <strong id="lblSliderRR">16</strong> rpm</label>
+                    <input type="range" id="sliderRR" min="0" max="60" value="16">
+                </div>
+
+                <div class="slider-row">
+                    <label>Temperatura: <strong id="lblSliderTemp">36.8</strong> °C</label>
+                    <input type="range" id="sliderTemp" min="0" max="43" step="0.1" value="36.8">
+                    <small class="text-muted">Permite bajar a hipotermia severa o 0</small>
+                </div>
+            </div>
+
+            <div class="ctrl-group">
+                <label class="ctrl-title">Acciones Rápidas de Simulación</label>
+                <div class="btn-presets">
+                    <button class="btn-preset" id="presetNorma">Paciente Normal</button>
+                    <button class="btn-preset" id="presetCrisisHTA">Crisis Hipertensiva (190/115)</button>
+                    <button class="btn-preset" id="presetAsma">Crisis Asmática (Hipoxia/Taquipnea)</button>
+                    <button class="btn-preset btn-danger-preset" id="presetParo">Paro Cardiorrespiratorio (0 /
+                        Asistolia)</button>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <script src="monitor.js"></script>
+</body>
+
+</html>

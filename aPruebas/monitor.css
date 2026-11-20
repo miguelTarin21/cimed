@@ -1,0 +1,659 @@
+/* ═════════════════════════════════════════════════════════════════════
+   ESTILOS DEL MONITOR CLÍNICO HOSPITALARIO MODERNO (CIMED - PROTOTIPO)
+   Inspirado en monitores de alta fidelidad: Mindray ePM / GE Carescape
+   ═════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* Paleta cromática médica estandarizada */
+    --color-bg-monitor: #000000;
+    --color-bg-card: #040808;
+    --color-border: #141c19;
+    --color-text-dim: #71827e;
+    
+    /* Canales clínicos */
+    --color-ecg: #00ff66;       /* Verde ECG / HR */
+    --color-spo2: #00e5ff;      /* Cian SpO2 / Pleth */
+    --color-co2: #ffd600;       /* Amarillo CO2 / Capno */
+    --color-resp: #e0f2fe;      /* Blanco / Celeste respiratorio */
+    --color-nbp: #d500f9;       /* Morado / Magenta Presión NIBP */
+    --color-temp: #1de9b6;      /* Turquesa / Menta Temperatura */
+    --color-alarm-crit: #ff1744;/* Rojo alarma crítica */
+    --color-alarm-warn: #ffab00;/* Ámbar alarma advertencia */
+
+    /* Tipografías */
+    --font-numeric: 'Roboto Mono', monospace;
+    --font-ui: 'Roboto', -apple-system, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: #080d0d;
+    font-family: var(--font-ui);
+    color: #fff;
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════
+   1. CONTENEDOR PRINCIPAL DEL MONITOR
+   ══════════════════════════════════════════════ */
+.monitor-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--color-bg-monitor);
+    position: relative;
+    border: 1px solid #111;
+}
+
+/* ══════════════════════════════════════════════
+   2. HEADER / BARRA SUPERIOR
+   ══════════════════════════════════════════════ */
+.mon-header {
+    height: 44px;
+    flex-shrink: 0;
+    background: #020505;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    font-size: 0.78rem;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.patient-pill {
+    background: #0d3830;
+    color: #00ffaa;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.5px;
+}
+
+.header-item {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.header-item .lbl {
+    font-size: 0.62rem;
+    color: var(--color-text-dim);
+    text-transform: uppercase;
+}
+
+.header-item .val {
+    font-size: 0.75rem;
+    color: #c9d6d3;
+    font-weight: 500;
+}
+
+.header-item .val.highlight {
+    color: #00e5ff;
+    font-weight: 700;
+}
+
+.alarm-banner {
+    background: #092015;
+    border: 1px solid #0d4a2c;
+    color: #00ff88;
+    padding: 4px 18px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    animation: bannerPulse 2s infinite ease-in-out;
+}
+
+.alarm-banner.critical {
+    background: #3b0007;
+    border-color: #ff1744;
+    color: #ff5252;
+    animation: bannerCritFlash 0.6s infinite step-end;
+}
+
+.alarm-banner.warning {
+    background: #332000;
+    border-color: #ffab00;
+    color: #ffd740;
+}
+
+@keyframes bannerPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+}
+
+@keyframes bannerCritFlash {
+    0%, 100% { background: #52000b; color: #fff; }
+    50% { background: #260005; color: #ff5252; }
+}
+
+.power-indicators {
+    display: flex;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+/* ══════════════════════════════════════════════
+   3. GRID PRINCIPAL (ONDAS + NÚMEROS)
+   ══════════════════════════════════════════════ */
+.mon-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    height: calc(100vh - 44px - 52px);
+    min-height: 0;
+    background: #000;
+    overflow: hidden;
+}
+
+/* ── COLUMNA DE ONDAS ── */
+.waves-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-right: 1px solid var(--color-border);
+    position: relative;
+    background: 
+        linear-gradient(to right, rgba(0, 255, 102, 0.02) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(to bottom, rgba(0, 255, 102, 0.02) 1px, transparent 1px) 0 0 / 20px 20px,
+        #000000;
+    overflow: hidden;
+}
+
+.wave-slot {
+    flex: 1 1 25%;
+    height: 25%;
+    position: relative;
+    border-bottom: 1px solid #0d1714;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.wave-slot:last-child {
+    border-bottom: none;
+}
+
+.wave-lead-info {
+    position: absolute;
+    top: 6px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-numeric);
+    font-size: 0.72rem;
+    font-weight: 700;
+    z-index: 5;
+    pointer-events: none;
+    background: rgba(0,0,0,0.4);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.wave-ecg .wave-lead-info { color: var(--color-ecg); }
+.wave-spo2 .wave-lead-info { color: var(--color-spo2); }
+.wave-co2 .wave-lead-info { color: var(--color-co2); }
+.wave-resp .wave-lead-info { color: var(--color-resp); }
+
+.gain-tag, .speed-tag {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+.cal-pulse {
+    width: 6px;
+    height: 12px;
+    border-left: 2px solid var(--color-ecg);
+    border-top: 2px solid var(--color-ecg);
+    border-right: 2px solid var(--color-ecg);
+    margin-left: 4px;
+    opacity: 0.75;
+}
+
+.wave-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ── COLUMNA DE VALORES NUMÉRICOS ── */
+.numerics-column {
+    display: flex;
+    flex-direction: column;
+    background: #020404;
+    padding: 6px;
+    gap: 5px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.num-row-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    flex: 1;
+    min-height: 0;
+}
+
+.num-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    padding: 4px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    min-height: 0;
+    transition: background 0.2s, border-color 0.2s;
+    overflow: hidden;
+}
+
+.num-card.span-nbp {
+    flex: 1.35;
+}
+
+.num-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.param-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.param-unit {
+    font-size: 0.65rem;
+    opacity: 0.6;
+}
+
+.num-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -2px;
+}
+
+.limits-box {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-numeric);
+    font-size: 0.65rem;
+    color: var(--color-text-dim);
+    line-height: 1.1;
+    min-width: 35px;
+}
+
+.main-value {
+    font-family: var(--font-numeric);
+    font-size: 2.3rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.sub-param {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: var(--font-numeric);
+    line-height: 1.1;
+}
+
+.sub-lbl {
+    font-size: 0.6rem;
+    color: var(--color-text-dim);
+}
+
+.sub-val {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* Colores específicos de cada tarjeta */
+.card-hr { border-left: 4px solid var(--color-ecg); color: var(--color-ecg); }
+.card-spo2 { border-left: 4px solid var(--color-spo2); color: var(--color-spo2); }
+.card-co2 { border-left: 4px solid var(--color-co2); color: var(--color-co2); }
+.card-resp { border-left: 4px solid var(--color-resp); color: var(--color-resp); }
+.card-nbp { border-left: 4px solid var(--color-nbp); color: var(--color-nbp); }
+.card-temp { border-left: 4px solid var(--color-temp); color: var(--color-temp); }
+
+/* Estilos de NIBP (Presión Arterial) */
+.nbp-body {
+    align-items: flex-start;
+}
+
+.nbp-composite {
+    display: flex;
+    flex-direction: column;
+}
+
+.nbp-bp {
+    font-family: var(--font-numeric);
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.nbp-map-group {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.map-lbl {
+    font-size: 0.65rem;
+    color: var(--color-text-dim);
+}
+
+.map-val {
+    font-family: var(--font-numeric);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.nbp-history {
+    font-family: var(--font-numeric);
+    font-size: 0.62rem;
+    color: #9c7aa6;
+    line-height: 1.25;
+    border-left: 1px solid #301736;
+    padding-left: 8px;
+}
+
+.history-title {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.nbp-timestamp {
+    font-size: 0.65rem;
+    color: var(--color-text-dim);
+}
+
+/* ══════════════════════════════════════════════
+   4. FOOTER / BARRA INFERIOR DE ACCIONES
+   ══════════════════════════════════════════════ */
+.mon-footer {
+    height: 52px;
+    min-height: 52px;
+    flex-shrink: 0;
+    background: #030807;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 8px;
+    overflow-x: auto;
+}
+
+.t-btn {
+    background: #081512;
+    border: 1px solid #142a24;
+    color: #b0c2be;
+    height: 38px;
+    border-radius: 4px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.t-btn:hover {
+    background: #102922;
+    color: #fff;
+    border-color: #1e453b;
+}
+
+.t-btn.btn-silence {
+    background: #473a00;
+    border-color: #ffab00;
+    color: #ffe082;
+}
+
+.t-btn.btn-silence.muted {
+    background: #ffab00;
+    color: #000;
+    font-weight: 700;
+}
+
+.t-btn.btn-pause {
+    background: #2b1f00;
+    border-color: #ffd54f;
+    color: #ffe57f;
+}
+
+.t-btn.btn-primary-act {
+    background: #042436;
+    border-color: #00b0ff;
+    color: #80d8ff;
+    margin-left: auto;
+}
+
+.t-btn.btn-test-panel {
+    background: #142e1f;
+    border-color: #00e676;
+    color: #69f0ae;
+    font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════
+   5. PANEL FLOTANTE DE CONTROL DOCENTE (DRAWER)
+   ══════════════════════════════════════════════ */
+.control-drawer {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    height: 100vh;
+    background: #0c1412;
+    border-left: 2px solid #00ff66;
+    box-shadow: -8px 0 30px rgba(0,0,0,0.85);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.control-drawer.open {
+    right: 0;
+}
+
+.drawer-header {
+    padding: 16px 20px;
+    background: #060a09;
+    border-bottom: 1px solid #142a24;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.drawer-header h5 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #00ff66;
+}
+
+.btn-close-drawer {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.drawer-desc {
+    font-size: 0.8rem;
+    color: #9cb0ab;
+    line-height: 1.4;
+}
+
+.ctrl-group {
+    background: #060b0a;
+    border: 1px solid #162420;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.ctrl-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: block;
+    color: #e0f2fe;
+}
+
+.rhythm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.btn-rhythm {
+    background: #091713;
+    border: 1px solid #1a332a;
+    color: #a3c2b8;
+    border-radius: 4px;
+    padding: 8px 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.btn-rhythm:hover {
+    background: #122921;
+    color: #fff;
+}
+
+.btn-rhythm.active {
+    background: #00ff66;
+    color: #000;
+    font-weight: 700;
+    border-color: #00ff66;
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+}
+
+.slider-row {
+    margin-bottom: 12px;
+}
+
+.slider-row:last-child {
+    margin-bottom: 0;
+}
+
+.slider-row label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    margin-bottom: 4px;
+    color: #d1deda;
+}
+
+.slider-row input[type=range] {
+    width: 100%;
+    accent-color: #00ff66;
+    cursor: pointer;
+}
+
+.slider-row small {
+    font-size: 0.65rem;
+    color: #6a827c;
+}
+
+.btn-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-preset {
+    background: #0b211a;
+    border: 1px solid #1a4234;
+    color: #bfe0d5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.btn-preset:hover {
+    background: #14382c;
+    color: #fff;
+}
+
+.btn-preset.btn-danger-preset {
+    background: #3b0a0f;
+    border-color: #70141d;
+    color: #ff8a80;
+}
+
+.btn-preset.btn-danger-preset:hover {
+    background: #541117;
+    color: #fff;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVO / RESOLUCIONES DE PANTALLA
+   ══════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .mon-grid {
+        grid-template-columns: 1fr 280px;
+    }
+    .main-value {
+        font-size: 2.5rem;
+    }
+    .nbp-bp {
+        font-size: 1.8rem;
+    }
+}

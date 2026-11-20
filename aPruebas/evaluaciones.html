@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIMED - Evaluaciones</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="overlay">
+  <div id="history-view" class="modal view-active">
+    <div class="modal-header-simple">
+      <button class="btn-text" id="btn-back-cases">← Volver al Panel de Casos</button>
+      <button class="btn-close">✕</button>
+    </div>
+    <div class="history-title-container">
+      <h2>Historial de Evaluaciones</h2>
+      <p>Caso: Infarto Agudo al Miocardio</p>
+    </div>
+
+    <div class="history-toolbar">
+      <input type="text" placeholder="Q Buscar por equipo o alumno..." class="search-input">
+      <select class="filter-select">
+        <option>Todos los subgrupos</option>
+      </select>
+      <button class="btn-primary" id="btn-new-eval">Calificar Nuevo Equipo</button>
+    </div>
+
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Subgrupo</th>
+          <th>Equipo</th>
+          <th>Integrantes</th>
+          <th>Calificación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="history-tbody">
+      </tbody>
+    </table>
+    <div class="history-footer">
+      <span id="eval-count">Mostrando 0 equipos evaluados</span>
+      <button class="btn-text">Limpiar todas las evaluaciones del semestre</button>
+    </div>
+  </div>
+
+  <div id="eval-view" class="modal">
+    <div class="header">
+      <button class="btn-back" id="btn-back-history">← Volver al Historial</button>
+      <div>
+        <h1>Evaluación de Simulación Clínica</h1>
+        <p>Caso: Infarto Agudo al Miocardio con Elevación del ST</p>
+      </div>
+      <div class="status-badge">Evaluación en curso ✕</div>
+    </div>
+    
+    <div class="toolbar">
+      <input type="text" id="input-subgroup" placeholder="Subgrupo (ej. 441-1)" class="form-input">
+      <input type="text" id="input-team" placeholder="Equipo (ej. 3)" class="form-input">
+      
+      <div class="tag-container" id="student-tags"></div>
+      <input type="text" id="input-student" placeholder="+ Escribir alumno y presionar Enter..." class="form-input student-input">
+      
+      <div class="timer">14:35</div>
+    </div>
+
+    <div class="content">
+      <div class="left-panel">
+        <div class="rubric-header">
+          <h3>Rúbrica de evaluación</h3>
+          <span id="criteria-count">0 de 10 criterios evaluados</span>
+        </div>
+        
+        <div id="rubric-container"></div>
+        
+        <div class="feedback-section">
+          <div class="feedback-box">
+            <strong>Fortalezas</strong>
+            <textarea id="text-strengths" placeholder="Escribe las fortalezas..."></textarea>
+          </div>
+          <div class="feedback-box">
+            <strong>Áreas de Oportunidad</strong>
+            <textarea id="text-weaknesses" placeholder="Escribe las áreas de oportunidad..."></textarea>
+          </div>
+        </div>
+        <label class="checkbox-label">
+          <input type="checkbox" id="check-debriefing"> Debriefing completado
+        </label>
+      </div>
+
+      <div class="right-panel">
+        <div class="score-section">
+          <div class="score-circle" id="total-score-circle">
+            <div><span class="score-label">Puntaje</span><span id="circle-score-val">0</span></div>
+          </div>
+          <div class="score-text">
+            <h4>Calificación final</h4>
+            <strong id="status-text">Pendiente</strong>
+            <p id="total-score-text">0 puntos</p>
+          </div>
+        </div>
+
+        <h4>Resumen de puntos</h4>
+        <table class="summary-table" id="summary-table">
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>Peso</th>
+              <th>Puntos</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+
+        <div class="action-buttons">
+          <button class="btn-dark">Generar Reporte Oficial PDF</button>
+          <button class="btn-outline" id="btn-save-eval">Guardar en Historial</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
