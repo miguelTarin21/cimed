@@ -43,7 +43,6 @@ if ($caseId > 0) {
   <div id="history-view" class="eval-modal view-active">
     <div class="modal-header-simple">
       <button class="btn-text" id="btn-back-cases">← Volver al Panel de Casos</button>
-      <button type="button" class="btn-close" onclick="cerrarModalEvaluaciones()" aria-label="Close"></button>
     </div>
     <div class="history-title-container">
       <h2>Historial de Evaluaciones</h2>
@@ -93,7 +92,13 @@ if ($caseId > 0) {
       <input type="text" id="input-team" placeholder="Equipo (ej. 3)" class="form-input">
       
       <div class="tag-container" id="student-tags"></div>
-      <input type="text" id="input-student" placeholder="+ Escribir alumno y presionar Enter..." class="form-input student-input">
+      <div class="student-input-group">
+        <input type="text" id="input-student" placeholder="+ Escribir alumno..." class="form-input student-input">
+        <button type="button" id="btn-add-student" class="btn-add-student" title="Agregar alumno a la lista">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Agregar
+        </button>
+      </div>
     </div>
 
     <div class="content">

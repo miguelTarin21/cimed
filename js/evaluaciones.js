@@ -169,12 +169,6 @@ function init() {
     btnBackCases.addEventListener('click', cerrarModalEvaluaciones);
   }
 
-  // boton cerrar modal
-  const btnCloseHistory = document.querySelector('#history-view .btn-close');
-  if (btnCloseHistory) {
-    btnCloseHistory.addEventListener('click', cerrarModalEvaluaciones);
-  }
-
   // badge de evaluacion en curso
   const statusBadge = document.querySelector('#eval-view .status-badge');
   if (statusBadge) {
@@ -183,14 +177,33 @@ function init() {
     });
   }
 
-  // agregar alumno con enter
+  // agregar alumno mediante funcion compartida (boton o enter)
+  function addStudentAction() {
+    if (!inputStudent) return;
+    const name = inputStudent.value.trim();
+    if (name !== '') {
+      currentStudents.push(name);
+      inputStudent.value = '';
+      renderStudents();
+      inputStudent.focus();
+    }
+  }
+
+  // boton de agregar alumno para soporte touch / tablet / ipad
+  const btnAddStudent = document.getElementById('btn-add-student');
+  if (btnAddStudent) {
+    btnAddStudent.addEventListener('click', (e) => {
+      e.preventDefault();
+      addStudentAction();
+    });
+  }
+
+  // agregar alumno con Enter en teclado fisico o virtual
   if (inputStudent) {
-    inputStudent.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && inputStudent.value.trim() !== '') {
+    inputStudent.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
-        currentStudents.push(inputStudent.value.trim());
-        inputStudent.value = '';
-        renderStudents();
+        addStudentAction();
       }
     });
   }
@@ -376,12 +389,16 @@ function updateTotals() {
   if (statusText) {
     if (evaluatedCount === 0) {
       statusText.innerText = "Pendiente";
+      statusText.style.color = "#64748b";
     } else if (total >= 90) {
       statusText.innerText = "Aprobado con Distinción";
+      statusText.style.color = "#198754";
     } else if (total >= 70) {
       statusText.innerText = "Aprobado";
+      statusText.style.color = "#198754";
     } else {
       statusText.innerText = "No Aprobado";
+      statusText.style.color = "#dc2626";
     }
   }
 }
@@ -565,7 +582,7 @@ function renderHistory() {
       <td>${ev.subgroup}</td>
       <td>${ev.team}</td>
       <td>${studentsText}</td>
-      <td><span style="border: 1px solid #ccc; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${ev.total}</span></td>
+      <td><span class="score-badge-table">${ev.total}</span></td>
       <td class="action-links">
         <button type="button" onclick="openEvaluation('${ev.id}')">Ver</button>
         <button type="button" onclick="deleteEvaluation('${ev.id}')">Eliminar</button>
