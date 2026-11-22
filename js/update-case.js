@@ -18,8 +18,8 @@ function updateVitalBadge(badgeId, value, type) {
         else if (value < 95) cls = 'warning';
     } else if (type === 'ta') {
         // value = sistólica
-        if (value >= 180) cls = 'critical';
-        else if (value >= 130) cls = 'warning';
+        if (value <= 60 || value >= 180) cls = 'critical';
+        else if (value < 90 || value >= 130) cls = 'warning';
     }
     badge.classList.add(cls);
 }
@@ -70,8 +70,37 @@ function initSliderListeners() {
     });
 }
 
+// Canal en tiempo real entre pestañas (Admin Panel -> Monitor de Simulación)
+const liveVitalsChannel = (typeof BroadcastChannel !== 'undefined')
+    ? new BroadcastChannel('cimed_live_vitals')
+    : null;
+
+function broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo) {
+    const payload = {
+        casoId: parseInt(casoId),
+        signos: {
+            FR: fr,
+            FC: fc,
+            TA: ta,
+            Temperatura: temp,
+            SAT: sat,
+            ritmo: ritmo || 'sinusal'
+        },
+        ts: Date.now()
+    };
+    try {
+        if (liveVitalsChannel) liveVitalsChannel.postMessage(payload);
+    } catch (e) {}
+    try {
+        localStorage.setItem('cimed_live_vitals', JSON.stringify(payload));
+    } catch (e) {}
+}
+
 let saveTimeout = null;
 function saveVitalSigns(casoId, fr, fc, ta, temp, sat, ritmo) {
+    // Emitir instantáneamente (0ms) al monitor abierto en el navegador
+    broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo);
+
     const status = document.getElementById('realtime-status');
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(async () => {
@@ -157,17 +186,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('patientHeight').value = data.paciente.altura;
                 document.getElementById('patientEnfermedades').value = data.paciente.enfermedades;
 
-                // Rellenar sliders de signos vitales
-                const fr   = data.signos_paciente.FR   || 16;
-                const fc   = data.signos_paciente.FC   || 75;
-                const ta   = data.signos_paciente.TA   || '120/80';
-                const temp = data.signos_paciente.Temperatura || 37.0;
-                const sat  = data.signos_paciente.SAT  || 98;
+                // Rellenar sliders de signos vitales (respetando el valor 0 en paro)
+                const rawFr = parseInt(data.signos_paciente.FR);
+                const rawFc = parseInt(data.signos_paciente.FC);
+                const rawSat = parseInt(data.signos_paciente.SAT);
+                const rawTemp = parseFloat(data.signos_paciente.Temperatura);
 
-                // Parse TA "sistólica/diastólica"
-                const taParts = String(ta).split('/');
-                const taSis   = parseInt(taParts[0]) || 120;
-                const taDia   = parseInt(taParts[1]) || 80;
+                const fr   = !isNaN(rawFr)   ? rawFr   : 16;
+                const fc   = !isNaN(rawFc)   ? rawFc   : 75;
+                const ta   = (data.signos_paciente.TA !== null && data.signos_paciente.TA !== undefined && data.signos_paciente.TA !== '')
+                             ? data.signos_paciente.TA : '120/80';
+                const temp = !isNaN(rawTemp) ? rawTemp : 37.0;
+                const sat  = !isNaN(rawSat)  ? rawSat  : 98;
+
+                // Parse TA "sistólica/diastólica" (respetando 0/0)
+                const taParts  = String(ta).split('/');
+                const rawTaSis = parseInt(taParts[0]);
+                const rawTaDia = parseInt(taParts[1]);
+                const taSis    = !isNaN(rawTaSis) ? rawTaSis : 120;
+                const taDia    = !isNaN(rawTaDia) ? rawTaDia : 80;
 
                 document.getElementById('patientFr').value    = fr;
                 document.getElementById('patientFc').value    = fc;
@@ -195,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Precargar ritmo cardíaco activo
                 const ritmo = data.signos_paciente.ritmo || 'sinusal';
                 window.currentRhythm = ritmo;
+                broadcastLiveVitals(caseId, fr, fc, `${taSis}/${taDia}`, temp, sat, ritmo);
                 document.querySelectorAll('.btn-rhythm-admin').forEach(b => {
                     b.style.opacity    = '0.45';
                     b.style.fontWeight = '500';

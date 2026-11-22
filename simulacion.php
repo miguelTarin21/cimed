@@ -57,13 +57,13 @@ $caseId = isset($_GET['id']) ? intval($_GET['id']) : 0;
             <i class="bi bi-play-circle"></i>
             <span>Maniobras</span>
         </button>
-        <button class="sim-tab" data-tab="electro">
-            <i class="bi bi-activity"></i>
-            <span>Electro</span>
-        </button>
         <button class="sim-tab" data-tab="quiz">
             <i class="bi bi-patch-question"></i>
             <span>Quiz</span>
+        </button>
+        <button class="sim-tab" data-tab="monitor">
+            <i class="bi bi-heart-pulse"></i>
+            <span>Monitor</span>
         </button>
     </div>
 
@@ -167,105 +167,7 @@ $caseId = isset($_GET['id']) ? intval($_GET['id']) : 0;
             </div>
         </div>
 
-        <!-- ══════════════ PESTAÑA 4: ELECTRO ══════════════ -->
-        <div class="sim-panel" id="panel-electro">
-            <div id="seccionECG">
-                <div class="monitor-pro">
-                    <!-- Barra de alertas -->
-                    <div class="mon-alert" id="monitor-alert" style="display:none"></div>
-
-                    <!-- Cuerpo: canales + vitals -->
-                    <div class="mon-body">
-                        <!-- Columna izquierda: canales de onda -->
-                        <div class="mon-channels">
-                            <div class="mon-ch">
-                                <div class="mon-ch-info">
-                                    <span class="mon-ch-name" style="color:#00ff9f">I</span>
-                                    <span class="mon-ch-sub" style="color:#00ff9f">ECG</span>
-                                </div>
-                                <canvas id="canvas-ecg" class="mon-canvas" height="88"></canvas>
-                            </div>
-                            <div class="mon-ch">
-                                <div class="mon-ch-info">
-                                    <span class="mon-ch-name" style="color:#4db8ff">SpO₂</span>
-                                    <span class="mon-ch-sub" style="color:#4db8ff">PLETH</span>
-                                </div>
-                                <canvas id="canvas-spo2" class="mon-canvas" height="88"></canvas>
-                            </div>
-                            <div class="mon-ch">
-                                <div class="mon-ch-info">
-                                    <span class="mon-ch-name" style="color:#ff6060">IBP</span>
-                                    <span class="mon-ch-sub" style="color:#ff6060">ART</span>
-                                </div>
-                                <canvas id="canvas-bp" class="mon-canvas" height="88"></canvas>
-                            </div>
-                            <div class="mon-ch">
-                                <div class="mon-ch-info">
-                                    <span class="mon-ch-name" style="color:#00e5cc">EEG</span>
-                                    <span class="mon-ch-sub" style="color:#00e5cc">BIS</span>
-                                </div>
-                                <canvas id="canvas-eeg" class="mon-canvas" height="88"></canvas>
-                            </div>
-                            <div class="mon-ch mon-ch-last">
-                                <div class="mon-ch-info">
-                                    <span class="mon-ch-name" style="color:#ffee00">CO₂</span>
-                                    <span class="mon-ch-sub" style="color:#ffee00">CAPNO</span>
-                                </div>
-                                <canvas id="canvas-co2" class="mon-canvas" height="88"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Columna derecha: valores numéricos -->
-                        <div class="mon-vitals">
-                            <div class="mv-block" id="card-fc">
-                                <div class="mv-lbl" style="color:#00ff9f">HR</div>
-                                <div class="mv-val" id="vi-fc" style="color:#00ff9f">--</div>
-                                <div class="mv-unit" style="color:#00ff9f">bpm</div>
-                            </div>
-                            <div class="mv-block" id="card-sat">
-                                <div class="mv-lbl" style="color:#4db8ff">SpO2</div>
-                                <div class="mv-val" id="vi-sat" style="color:#4db8ff">--</div>
-                                <div class="mv-unit" style="color:#4db8ff">%</div>
-                            </div>
-                            <div class="mv-block" id="card-ta">
-                                <div class="mv-lbl" style="color:#ff6060">IBP</div>
-                                <div class="mv-val mv-val-sm" id="vi-ta" style="color:#ff6060">--/--</div>
-                                <div class="mv-unit" style="color:#ff6060">mmHg</div>
-                            </div>
-                            <div class="mv-block" id="card-temp">
-                                <div class="mv-lbl" style="color:#00e5cc">BIS</div>
-                                <div class="mv-val" id="vi-bis" style="color:#00e5cc">--</div>
-                                <div class="mv-unit" style="color:#00e5cc">&nbsp;</div>
-                                <div style="display:none" id="vi-temp"></div>
-                            </div>
-                            <div class="mv-block mv-block-co2" id="card-fr">
-                                <div class="mv-lbl" style="color:#ffee00">CO₂</div>
-                                <div class="mv-val mv-val-lg" id="vi-etco2" style="color:#ffee00">--</div>
-                                <div class="mv-unit" style="color:#ffee00">
-                                    RR&nbsp;<span id="vi-fr">--</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Barra de estado -->
-                    <div class="mon-statusbar">
-                        <span class="ecg-led" id="ecg-led"></span>
-                        <span style="font-family:monospace;color:#00ff9f;font-size:.78rem;letter-spacing:2px">
-                            CIMED MONITOR
-                        </span>
-                        <span class="ecg-bpm-display" id="ecg-bpm-display" style="margin-left:14px">-- BPM</span>
-                        <span class="ecg-status-text" id="ecg-status-text" style="margin-left:10px">Cargando…</span>
-                        <span class="ms-auto" style="font-size:.7rem;color:#444" id="ecg-last-update"></span>
-                    </div>
-                </div>
-            </div>
-            <!-- Elementos ocultos para compatibilidad con JS legacy -->
-            <canvas id="ecgCanvas" style="display:none"></canvas>
-            <div id="vitals-indicators" style="display:none"></div>
-        </div>
-
-        <!-- ══════════════ PESTAÑA 5: QUIZ ══════════════ -->
+        <!-- ══════════════ PESTAÑA 4: QUIZ ══════════════ -->
         <div class="sim-panel" id="panel-quiz">
             <div id="seccionBienvenida" class="sim-card text-center">
                 <div class="sim-quiz-start-icon">🩺</div>
@@ -286,6 +188,243 @@ $caseId = isset($_GET['id']) ? intval($_GET['id']) : 0;
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- ══════════════ PESTAÑA 5: MONITOR ══════════════ -->
+        <div class="sim-panel" id="panel-monitor">
+            <div id="seccionECG">
+                <div class="vsm-monitor connected" id="vsm-monitor-root">
+                    <!-- Barra superior estilo plantilla hospitalaria -->
+                    <div class="vsm-topbar">
+                        <div class="vsm-patient-btn" id="btn-connect-patient">
+                            <i class="bi bi-person-fill vsm-patient-icon"></i>
+                            <span class="vsm-patient-label">Adult</span>
+                        </div>
+                        <div class="vsm-top-cell">
+                            <span class="vsm-top-lbl">Bed</span>
+                            <span class="vsm-top-val">ICU 1</span>
+                        </div>
+                        <div class="vsm-top-cell">
+                            <span class="vsm-top-lbl">Patient category</span>
+                            <span class="vsm-top-val">Adult</span>
+                        </div>
+                        <div class="vsm-top-cell">
+                            <span class="vsm-top-lbl">Paced mode</span>
+                            <span class="vsm-top-val">Non-paced</span>
+                        </div>
+                        <div class="vsm-top-cell vsm-top-cell-bar">
+                            <span class="vsm-top-lbl vsm-lbl-accent">ECG</span>
+                            <div class="vsm-status-bar-indicator"></div>
+                            <span class="vsm-top-sub">Standard</span>
+                        </div>
+                        <div class="vsm-top-cell">
+                            <span class="vsm-top-lbl">NBP</span>
+                            <span class="vsm-top-val" id="vsm-top-nbp-mode">Manual</span>
+                        </div>
+                        <div class="vsm-top-cell vsm-top-cell-bar">
+                            <span class="vsm-top-lbl">Alarms</span>
+                            <div class="vsm-status-bar-indicator"></div>
+                            <span class="vsm-top-sub" id="vsm-top-alarm-state">On</span>
+                        </div>
+                        <div class="vsm-top-cell">
+                            <span class="vsm-top-lbl">Profile</span>
+                            <span class="vsm-top-val">Adult</span>
+                        </div>
+                        <div class="vsm-top-icons">
+                            <i class="bi bi-plug-fill" title="Corriente AC"></i>
+                            <i class="bi bi-battery-full" title="Batería"></i>
+                        </div>
+                    </div>
+
+                    <!-- Cuerpo del Monitor -->
+                    <div class="vsm-body-grid">
+                        <!-- Zona Izquierda y Central (Ondas + Numéricos + NBP abajo) -->
+                        <div class="vsm-left-area">
+                            <div class="vsm-channels-and-nums">
+                                <!-- Columna de 4 canales de ondas (II, Pleth, CO2, Resp) -->
+                                <div class="vsm-waves-col">
+                                    <!-- Canal 1: II (Ritmo cardíaco / ECG - Verde) -->
+                                    <div class="vsm-wave-box">
+                                        <div class="vsm-wave-header" style="color:#25e500;">
+                                            <span class="vsm-wave-title">II</span>
+                                            <span class="vsm-wave-meta">×1 25 mm/s</span>
+                                        </div>
+                                        <canvas id="canvas-ecg" class="vsm-canvas"></canvas>
+                                    </div>
+                                    <!-- Canal 2: Pleth (Oxigenación SpO2 - Azul/Cian) -->
+                                    <div class="vsm-wave-box">
+                                        <div class="vsm-wave-header" style="color:#1ec8ff;">
+                                            <span class="vsm-wave-title">Pleth</span>
+                                        </div>
+                                        <canvas id="canvas-spo2" class="vsm-canvas"></canvas>
+                                    </div>
+                                    <!-- Canal 3: CO2 (Capnografía - Amarillo) -->
+                                    <div class="vsm-wave-box">
+                                        <div class="vsm-wave-header" style="color:#ffee00;">
+                                            <span class="vsm-wave-title">CO<sub>2</sub></span>
+                                            <span class="vsm-wave-meta">Capno</span>
+                                        </div>
+                                        <canvas id="canvas-co2" class="vsm-canvas"></canvas>
+                                    </div>
+                                    <!-- Canal 4: Resp (Respiración - Blanco) -->
+                                    <div class="vsm-wave-box vsm-wave-box-last">
+                                        <div class="vsm-wave-header" style="color:#cceeff;">
+                                            <span class="vsm-wave-title">Resp</span>
+                                        </div>
+                                        <div class="vsm-wave-footer" style="color:#cceeff;">Impedance</div>
+                                        <canvas id="canvas-resp" class="vsm-canvas"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Columna de bloques numéricos -->
+                                <div class="vsm-nums-col">
+                                    <!-- 1. HR (Verde) -->
+                                    <div class="vsm-num-box" id="card-fc">
+                                        <div class="vsm-num-header" style="color:#25e500;">
+                                            <span>HR</span>
+                                            <span class="vsm-num-unit">bpm</span>
+                                        </div>
+                                        <div class="vsm-num-content">
+                                            <div class="vsm-num-limits" style="color:#25e500;">
+                                                <span>120</span>
+                                                <span>50</span>
+                                            </div>
+                                            <div class="vsm-num-value" id="vi-fc" style="color:#25e500;">--</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. SpO2 (Azul/Cian) -->
+                                    <div class="vsm-num-box" id="card-sat">
+                                        <div class="vsm-num-header" style="color:#1ec8ff;">
+                                            <span>SpO<sub>2</sub></span>
+                                            <span class="vsm-num-unit">%</span>
+                                        </div>
+                                        <div class="vsm-num-content">
+                                            <div class="vsm-num-limits" style="color:#1ec8ff;">
+                                                <span>100</span>
+                                                <span>90</span>
+                                            </div>
+                                            <div class="vsm-num-value" id="vi-sat" style="color:#1ec8ff;">--</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3. CO2 Capnografía (Amarillo) -->
+                                    <div class="vsm-num-box" id="card-co2">
+                                        <div class="vsm-num-header" style="color:#ffee00;">
+                                            <span>CO<sub>2</sub></span>
+                                            <span class="vsm-num-unit">mmHg</span>
+                                        </div>
+                                        <div class="vsm-num-content">
+                                            <div class="vsm-num-limits" style="color:#ffee00;">
+                                                <span>45</span>
+                                                <span>35</span>
+                                            </div>
+                                            <div class="vsm-num-value" id="vi-etco2" style="color:#ffee00;">--</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 4. RR Respiración (Blanco) -->
+                                    <div class="vsm-num-box" id="card-fr">
+                                        <div class="vsm-num-header" style="color:#cceeff;">
+                                            <span>RR</span>
+                                            <span class="vsm-num-unit">rpm</span>
+                                        </div>
+                                        <div class="vsm-num-content">
+                                            <div class="vsm-num-limits" style="color:#cceeff;">
+                                                <span>30</span>
+                                                <span>8</span>
+                                            </div>
+                                            <div class="vsm-num-value" id="vi-fr" style="color:#cceeff;">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Barra Inferior: NBP -->
+                            <div class="vsm-nbp-panel" id="card-ta">
+                                <div class="vsm-nbp-left">
+                                    <div class="vsm-nbp-title">
+                                        <span class="vsm-nbp-lbl">NBP</span>
+                                        <span class="vsm-nbp-unit">mmHg</span>
+                                    </div>
+                                    <div class="vsm-nbp-main-row">
+                                        <div class="vsm-nbp-limits">
+                                            <span>SYS</span>
+                                            <span>160</span>
+                                            <span>90</span>
+                                        </div>
+                                        <div class="vsm-nbp-sysdia" id="vi-ta">-- / --</div>
+                                    </div>
+                                </div>
+
+                                <div class="vsm-nbp-center">
+                                    <div class="vsm-nbp-manual-lbl">Manual</div>
+                                    <div class="vsm-nbp-map-val" id="vi-map">--</div>
+                                </div>
+
+                                <div class="vsm-nbp-map-limits">
+                                    <span>MAP</span>
+                                    <span>100</span>
+                                    <span>60</span>
+                                </div>
+
+                                <div class="vsm-nbp-history" id="vi-nbp-history">
+                                    <div class="vsm-hist-row"><span>8:33</span><span>133/41 (63)</span></div>
+                                    <div class="vsm-hist-row"><span>8:28</span><span>129/43 (65)</span></div>
+                                    <div class="vsm-hist-row"><span>8:23</span><span>135/46 (68)</span></div>
+                                    <div class="vsm-hist-row"><span>8:18</span><span>131/45 (66)</span></div>
+                                    <div class="vsm-hist-row"><span>8:13</span><span>128/42 (64)</span></div>
+                                    <div class="vsm-hist-row"><span>8:08</span><span>130/44 (66)</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Pulse, Temp (verde menta, siempre visible), Code, Reloj y Botón Silence -->
+                        <div class="vsm-right-col">
+                            <div class="vsm-right-box">
+                                <div class="vsm-pulse-section">
+                                    <div class="vsm-pulse-header">
+                                        <span>Pulse</span>
+                                        <span class="vsm-pulse-unit">bpm</span>
+                                    </div>
+                                    <div class="vsm-pulse-val" id="vi-pulse">--</div>
+                                </div>
+
+                                <!-- HU-03 / RF-02: Temperatura fija y siempre visible (verde menta) -->
+                                <div class="vsm-temp-section" id="card-temp">
+                                    <div class="vsm-temp-header">
+                                        <span>Temp</span>
+                                        <span class="vsm-temp-unit">°C</span>
+                                    </div>
+                                    <div class="vsm-temp-row">
+                                        <div class="vsm-temp-limits">
+                                            <span>37.5</span>
+                                            <span>36.0</span>
+                                        </div>
+                                        <div class="vsm-temp-val" id="vi-temp">--</div>
+                                    </div>
+                                </div>
+
+                                <div class="vsm-code-section">
+                                    <div class="vsm-code-lbl">Code</div>
+                                    <div class="vsm-code-signs">- +</div>
+                                    <div class="vsm-clock-val" id="vi-clock">0:00</div>
+                                </div>
+                            </div>
+
+                            <div class="vsm-silence-container">
+                                <button type="button" class="vsm-silence-btn" id="btn-mute" title="Silenciar / Activar sonido de alarmas y monitor">
+                                    <i class="bi bi-bell-slash" id="silence-icon"></i>
+                                    <span>Silence</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Elementos ocultos para compatibilidad -->
+            <canvas id="ecgCanvas" style="display:none"></canvas>
+            <div id="vitals-indicators" style="display:none"></div>
         </div>
 
     </main>

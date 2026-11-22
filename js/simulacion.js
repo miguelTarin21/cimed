@@ -5,12 +5,36 @@ let mostrarExplicacion = false;
 let bloqueado = false;
 
 // ═══════════════════════════════════════════════════════
-//  Signos vitales globales
+//  Signos vitales globales y estado del Monitor
 // ═══════════════════════════════════════════════════════
 let ecgVitals = { FC: 75, FR: 16, TA: '120/80', Temperatura: 37.0, SAT: 98, ritmo: 'sinusal' };
+let isPatientConnected = true;
+let isMonitorTabActive = false;
+let connectionSeconds = 0;
+let connectionTimerInterval = null;
+let wasCardiacArrest = false;
+
+// Helper para obtener presión sistólica y diastólica respetando el 0
+function parseTA(taStr) {
+    const parts = String(taStr ?? '120/80').split('/');
+    const rawSis = parseInt(parts[0]);
+    const rawDia = parseInt(parts[1]);
+    return {
+        sys: !isNaN(rawSis) ? rawSis : 120,
+        dia: !isNaN(rawDia) ? rawDia : 80
+    };
+}
+
+// Determina si el paciente está en paro circulatorio (sin pulso o presión en 0)
+function isCardiacArrest() {
+    const rhythm = ecgVitals.ritmo || 'sinusal';
+    const fc = ecgVitals.FC ?? 0;
+    const { sys } = parseTA(ecgVitals.TA);
+    return rhythm === 'asistole' || rhythm === 'fv' || fc <= 0 || sys <= 0;
+}
 
 // ═══════════════════════════════════════════════════════
-//  WaveformChannel — motor de canal genérico
+//  WaveformChannel — motor de canales del Monitor
 // ═══════════════════════════════════════════════════════
 class WaveformChannel {
     constructor(canvas, type, color) {
@@ -19,41 +43,42 @@ class WaveformChannel {
         this.type = type;
         this.color = color;
         this.width = 0;
-        this.height = canvas.height;
+        this.height = canvas.height || 100;
         this.data = null;
         this.writePos = 0;
-        this.phase = Math.random(); // Desincronizar canales
+        this.phase = Math.random();
         this.speed = 2;
         this._raf = null;
-        this._eegVal = 0;
-        this._fvT    = Math.random(); // Fase propia de FV (independiente del FC)
-        this._fvAmpT = 0;             // Modulador coarse→fine (avanza muy lento)
     }
 
-    resize(w) {
-        this.width = w;
-        this.canvas.width = w;
-        this.data = new Float32Array(w).fill(this.height / 2);
+    resize(w, h) {
+        this.width = Math.max(w, 50);
+        this.height = Math.max(h || this.canvas.parentElement?.clientHeight || 95, 45);
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        this.data = new Float32Array(this.width).fill(this.height / 2);
         this.writePos = 0;
+    }
+
+    flattenBuffer() {
+        if (!this.data) return;
+        this.data.fill(this.height / 2);
     }
 
     // ── Formas de onda ──────────────────────────────
     _ecgSample(t) {
         const rhythm = ecgVitals.ritmo || 'sinusal';
-        
-        if (rhythm === 'asistole') {
-            // Asistole: Línea casi plana con un poco de ruido de fondo
-            return 0.5 + (Math.random() - 0.5) * 0.015;
+        const fc = ecgVitals.FC ?? 0;
+        const { sys } = parseTA(ecgVitals.TA);
+
+        if (rhythm === 'asistole' || (fc <= 0 && rhythm !== 'fv') || (sys <= 0 && rhythm !== 'fv')) {
+            return 0.5;
         }
-        
+
         if (rhythm === 'fv') {
-            // Fibrilación ventricular — oscilaciones basadas en tiempo real:
-            //  • Usa Date.now() para garantizar variación visible en cada frame,
-            //    completamente independiente de la FC, phase o cualquier acumulador.
-            //  • Ciclo coarse→fine cosmético (~20s) modulado por seno lento.
             const nowSec = Date.now() / 1000;
-            const env    = 0.70 + 0.30 * Math.abs(Math.sin(nowSec * 0.05 * Math.PI));
-            return 0.5 + (Math.sin(nowSec *  7.3) * 0.30
+            const env = 0.70 + 0.30 * Math.abs(Math.sin(nowSec * 0.05 * Math.PI));
+            return 0.5 + (Math.sin(nowSec * 7.3) * 0.30
                         + Math.sin(nowSec * 13.9) * 0.22
                         + Math.sin(nowSec * 21.5) * 0.14
                         + Math.sin(nowSec * 37.1) * 0.08
@@ -63,188 +88,179 @@ class WaveformChannel {
         const g = (c, a, s) => a * Math.exp(-Math.pow((t - c) / s, 2));
 
         if (rhythm === 'st_elevacion') {
-            // Elevación ST: segmento ST elevado ampliamente + onda T alta y concordante
-            // La línea de base no regresa a cero entre S y T → sube visible
-            return g(0.18, 0.20, 0.042)   // Onda P
-                + g(0.42, -0.08, 0.012)   // Q pequeña
-                + g(0.47, 1.00, 0.013)    // R
-                + g(0.52, -0.12, 0.011)   // S poco profunda (el ST no baja)
-                + g(0.63, 0.55, 0.075)    // Elevación ST amplia y alta
-                + g(0.78, 0.50, 0.055);   // Onda T alta y ancha (concordante)
+            return g(0.18, 0.20, 0.042)
+                + g(0.42, -0.08, 0.012)
+                + g(0.47, 1.00, 0.013)
+                + g(0.52, -0.12, 0.011)
+                + g(0.63, 0.55, 0.075)
+                + g(0.78, 0.50, 0.055);
         }
 
         if (rhythm === 'st_depresion') {
-            // ST Depression (NSTEMI / isquemia subendocárdica):
-            // QRS de morfología NORMAL — la depresión ocurre desde el punto J,
-            // el segmento ST desciende horizontalmente y la onda T se invierte.
-            // La onda S es igual al sinusal (S profunda es de BRI/HVI, no de isquemia).
-            return g(0.18, 0.20, 0.042)   // Onda P normal
-                + g(0.42, -0.10, 0.013)   // Q normal
-                + g(0.47, 1.00, 0.013)    // R normal
-                + g(0.52, -0.28, 0.013)   // S igual al sinusal (NO exagerada)
-                + g(0.61, -0.28, 0.055)   // Depresión ST horizontal desde J-point
-                + g(0.75, -0.18, 0.048);  // Onda T invertida (isquemia subendocárdica)
+            return g(0.18, 0.20, 0.042)
+                + g(0.42, -0.10, 0.013)
+                + g(0.47, 1.00, 0.013)
+                + g(0.52, -0.28, 0.013)
+                + g(0.61, -0.28, 0.055)
+                + g(0.75, -0.18, 0.048);
         }
 
         if (rhythm === 'taquicardia') {
-            // Taquicardia Ventricular (TV) monomorfa:
-            //  • Sin onda P visible (disociación AV)
-            //  • QRS ancho y bizarro: rampa lenta de subida, pico tardío, descenso prolongado
-            //  • Onda T discordante (polaridad opuesta al QRS) — sello clínico de TV
-            return g(0.28, 0.30, 0.060)    // Inicio lento del QRS ancho
-                + g(0.42, 0.95, 0.050)     // Pico del QRS (ancho, tardío)
-                + g(0.56, -0.50, 0.060)    // Descenso ancho post-QRS
-                + g(0.73, -0.30, 0.060);   // Onda T discordante (invertida)
+            return g(0.28, 0.30, 0.060)
+                + g(0.42, 0.95, 0.050)
+                + g(0.56, -0.50, 0.060)
+                + g(0.73, -0.30, 0.060);
         }
 
-        // Ritmo Sinusal (normal, no taquicardia — FC controlada por slider)
         return g(0.20, 0.22, 0.045)
-            + g(0.43, -0.10, 0.013)
-            + g(0.48, 1.00, 0.013)
-            + g(0.53, -0.28, 0.013)
-            + g(0.70, 0.32, 0.055);
+            + g(0.43, -0.18, 0.014)
+            + g(0.48, 1.00, 0.014)
+            + g(0.53, -0.32, 0.014)
+            + g(0.70, 0.34, 0.050);
     }
 
     _spo2Sample(t) {
-        const rhythm = ecgVitals.ritmo || 'sinusal';
-        const fc = ecgVitals.FC || 0;
-        if (rhythm === 'asistole' || rhythm === 'fv' || fc === 0) {
-            return 0.0 + (Math.random() - 0.5) * 0.01;
+        if (isCardiacArrest() || (ecgVitals.SAT ?? 0) <= 0) {
+            return 0.5;
         }
-        const main = Math.pow(Math.sin(Math.PI * t), 2) * 0.85;
-        const notch = (t > 0.56 && t < 0.66)
-            ? -0.09 * Math.sin(Math.PI * (t - 0.56) / 0.10) : 0;
-        return main + notch;
-    }
-
-    _bpSample(t) {
-        const rhythm = ecgVitals.ritmo || 'sinusal';
-        const fc = ecgVitals.FC || 0;
-        if (rhythm === 'asistole' || rhythm === 'fv' || fc === 0) {
-            return 0.04 + (Math.random() - 0.5) * 0.01;
+        if (t < 0.28) {
+            return Math.sin((t / 0.28) * (Math.PI / 2));
+        } else if (t < 0.52) {
+            const p = (t - 0.28) / 0.24;
+            return 1.0 - p * 0.65;
+        } else if (t < 0.72) {
+            const p = (t - 0.52) / 0.20;
+            return 0.35 + Math.sin(p * Math.PI) * 0.16 - p * 0.15;
+        } else {
+            const p = (t - 0.72) / 0.28;
+            return Math.max(0, 0.20 * (1 - p));
         }
-        if (t < 0.12) return t / 0.12;
-        if (t < 0.20) return 1 - (t - 0.12) / 0.08 * 0.22;
-        if (t < 0.26) return 0.78 + Math.sin(Math.PI * (t - 0.20) / 0.06) * 0.13;
-        return Math.max(0.04, 0.91 - (t - 0.26) / 0.74 * 0.87);
-    }
-
-    _eegSample() {
-        this._eegVal += (Math.random() - 0.5) * 0.28;
-        this._eegVal *= 0.91;
-        return this._eegVal * 0.5 + 0.5;
     }
 
     _co2Sample(t) {
+        const fr = ecgVitals.FR ?? 0;
+        if (fr <= 0 || isCardiacArrest()) return 0;
         if (t < 0.07) return 0;
         if (t < 0.17) return (t - 0.07) / 0.10;
-        if (t < 0.58) return 1.0 - (t - 0.17) / 0.41 * 0.07; // plateau suave
+        if (t < 0.58) return 1.0 - (t - 0.17) / 0.41 * 0.07;
         if (t < 0.66) return Math.max(0, 0.93 - (t - 0.58) / 0.08 * 0.93);
         return 0;
+    }
+
+    _respSample(t) {
+        const fr = ecgVitals.FR ?? 0;
+        if (fr <= 0 || isCardiacArrest()) return 0.5;
+        const wave = Math.sin(t * 2 * Math.PI - Math.PI / 2) * 0.5 + 0.5;
+        return Math.pow(wave, 1.35);
     }
 
     sample(t) {
         switch (this.type) {
             case 'ecg': return this._ecgSample(t);
             case 'spo2': return this._spo2Sample(t);
-            case 'bp': return this._bpSample(t);
-            case 'eeg': return this._eegSample();
             case 'co2': return this._co2Sample(t);
+            case 'resp': return this._respSample(t);
             default: return 0.5;
         }
     }
 
     pixelsPerCycle() {
-        const fc = Math.max(ecgVitals.FC, 1);
-        const fr = Math.max(ecgVitals.FR, 1);
-        // ~120 px/s a 60fps con speed=2
+        const fc = Math.max(ecgVitals.FC || 0, 1);
+        const fr = Math.max(ecgVitals.FR || 0, 1);
         switch (this.type) {
             case 'ecg':
             case 'spo2':
-            case 'bp': return (120 * 60) / fc;
-            case 'eeg': return 38;
-            case 'co2': return (120 * 60) / fr;
+                return (120 * 60) / fc;
+            case 'co2':
+            case 'resp':
+                return (95 * 60) / fr;
+            default:
+                return 100;
         }
     }
 
+    isChannelFlat() {
+        const rhythm = ecgVitals.ritmo || 'sinusal';
+        const arrest = isCardiacArrest();
+        if (this.type === 'ecg') return arrest && rhythm !== 'fv';
+        if (this.type === 'spo2') return arrest || (ecgVitals.SAT ?? 0) <= 0;
+        if (this.type === 'co2' || this.type === 'resp') return arrest || (ecgVitals.FR ?? 0) <= 0;
+        return false;
+    }
+
     update() {
+        if (!this.data || !this.width) return;
+
         this.phase += this.speed / this.pixelsPerCycle();
         if (this.phase >= 1) this.phase -= 1;
 
-        // FV: avanzar fase propia a velocidad fija (independiente del FC)
-        this._fvT += 2 / 85;
-        if (this._fvT >= 1) this._fvT -= 1;
-
-        // FV coarse→fine: ciclo lento de ~18s (60fps × 18s = 1080 frames → paso ~0.00093)
-        // Va de amplitud máxima (coarse) a mínima (fine) y vuelve a subir, como en paro real
-        this._fvAmpT += 0.00093;
-        if (this._fvAmpT >= 1) this._fvAmpT -= 1;
-
         const val = this.sample(this.phase);
-        const cx  = this.height / 2;
+        const cx = this.height / 2;
         const amp = this.height * 0.36;
-        const isFV = (this.type === 'ecg' && (ecgVitals.ritmo || 'sinusal') === 'fv');
+        const rhythm = ecgVitals.ritmo || 'sinusal';
+        const arrest = isCardiacArrest();
+        const isFV = (this.type === 'ecg' && rhythm === 'fv');
 
-        if (this.type === 'eeg') {
-            this.data[this.writePos] = cx - (val - 0.5) * amp * 1.6;
-        } else if (this.type === 'co2') {
-            // Capno: crece hacia arriba (invertido)
-            this.data[this.writePos] = (this.height - 8) - val * (this.height - 16);
+        if (this.type === 'co2') {
+            if ((ecgVitals.FR ?? 0) <= 0 || arrest) {
+                this.data[this.writePos] = cx;
+            } else {
+                this.data[this.writePos] = (this.height - 12) - val * (this.height - 26);
+            }
+        } else if (this.type === 'resp') {
+            if ((ecgVitals.FR ?? 0) <= 0 || arrest) {
+                this.data[this.writePos] = cx;
+            } else {
+                this.data[this.writePos] = (this.height - 14) - val * (this.height - 28);
+            }
+        } else if (this.type === 'spo2') {
+            if (arrest || (ecgVitals.SAT ?? 0) <= 0) {
+                this.data[this.writePos] = cx;
+            } else {
+                this.data[this.writePos] = (this.height - 16) - val * (this.height - 30);
+            }
         } else if (isFV) {
-            // FV: amplitud extra para que sea visualmente inconfundible
-            this.data[this.writePos] = cx - (val - 0.5) * amp * 2.4;
+            this.data[this.writePos] = cx - (val - 0.5) * amp * 2.3;
+        } else if (arrest) {
+            this.data[this.writePos] = cx;
         } else {
-            this.data[this.writePos] = (cx + amp * 0.28) - val * amp;
+            this.data[this.writePos] = (cx + amp * 0.35) - val * amp * 1.15;
         }
         this.writePos = (this.writePos + 1) % this.width;
     }
 
     draw() {
         const ctx = this.ctx;
+        if (!this.width || !this.height) return;
 
-        // Fondo
-        ctx.fillStyle = '#050a06';
+        ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, this.width, this.height);
 
-        // Rejilla
-        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-        ctx.lineWidth = 0.5;
-        for (let x = 0; x < this.width; x += 40) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.height); ctx.stroke();
-        }
-        for (let y = 0; y < this.height; y += this.height / 4) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(this.width, y); ctx.stroke();
-        }
-        // Línea central
-        ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, this.height / 2); ctx.lineTo(this.width, this.height / 2);
-        ctx.stroke();
+        const flat = this.isChannelFlat();
 
-        // Waveform
         ctx.strokeStyle = this.color;
         ctx.lineWidth = 1.8;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = this.color;
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.beginPath();
+
+        if (flat) {
+            ctx.moveTo(0, this.height / 2);
+            ctx.lineTo(this.width, this.height / 2);
+            ctx.stroke();
+            return;
+        }
+
         for (let i = 0; i < this.width; i++) {
-            const idx = (this.writePos + i) % this.width;
-            if (i === 0) ctx.moveTo(i, this.data[idx]);
-            else ctx.lineTo(i, this.data[idx]);
+            const y = this.data[i];
+            if (i === 0) ctx.moveTo(i, y);
+            else ctx.lineTo(i, y);
         }
         ctx.stroke();
-        ctx.shadowBlur = 0;
 
-        // Barrido (sweep)
         const xW = (this.writePos === 0 ? this.width - 1 : this.writePos - 1);
-        const grad = ctx.createLinearGradient(xW - 24, 0, xW + 4, 0);
-        grad.addColorStop(0, 'rgba(5,10,6,0)');
-        grad.addColorStop(1, 'rgba(5,10,6,0.97)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(xW - 24, 0, 28, this.height);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(xW, 0, 18, this.height);
     }
 
     tick() {
@@ -253,8 +269,18 @@ class WaveformChannel {
         this._raf = requestAnimationFrame(() => this.tick());
     }
 
-    start() { this._raf = requestAnimationFrame(() => this.tick()); }
-    stop() { if (this._raf) cancelAnimationFrame(this._raf); }
+    start() {
+        if (!this._raf) {
+            this._raf = requestAnimationFrame(() => this.tick());
+        }
+    }
+
+    stop() {
+        if (this._raf) {
+            cancelAnimationFrame(this._raf);
+            this._raf = null;
+        }
+    }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -278,12 +304,12 @@ function getVitalClass(type, value) {
     }
     if (type === 'temp') {
         if (value < 35 || value > 39) return 'critical';
-        if (value < 36.1 || value > 37.2) return 'warning';
+        if (value < 36.0 || value > 37.5) return 'warning';
         return 'normal';
     }
     if (type === 'ta') {
-        if (value >= 180) return 'critical';
-        if (value >= 130) return 'warning';
+        if (value <= 60 || value >= 180) return 'critical';
+        if (value < 90 || value >= 130) return 'warning';
         return 'normal';
     }
     return 'normal';
@@ -294,7 +320,6 @@ function setVitalCard(cardId, displayId, value, displayText, type) {
     const disp = document.getElementById(displayId);
     if (!card || !disp) return;
     const cls = getVitalClass(type, value);
-    // Preserva clases base, solo cambia estado
     const base = card.dataset.baseClass || card.className.split(' ')[0];
     card.dataset.baseClass = base;
     card.className = base + (cls !== 'normal' ? ' mv-' + cls : '');
@@ -305,89 +330,125 @@ function setVitalCard(cardId, displayId, value, displayText, type) {
 //  Actualizar UI del monitor con signos vitales
 // ═══════════════════════════════════════════════════════
 function updateVitalsUI(signos) {
-    if (!signos) return;
-    const fc = parseInt(signos.FC) || 0;
-    const fr = parseInt(signos.FR) || 0;
-    const sat = parseInt(signos.SAT) || 0;
-    const temp = parseFloat(signos.Temperatura) || 0;
-    const ta = signos.TA || '--/--';
+    if (signos) {
+        const rawFc = parseInt(signos.FC);
+        const rawFr = parseInt(signos.FR);
+        const rawSat = parseInt(signos.SAT);
+        const rawTemp = parseFloat(signos.Temperatura);
 
-    // Derivados simulados
-    const bis = temp > 0 ? Math.min(99, Math.max(40, Math.round(91 + (37.0 - temp) * 6))) : '--';
-    const etco2 = fr > 0 ? Math.min(55, Math.max(20, Math.round(38 + (16 - fr) * 0.6))) : '--';
+        const fc = !isNaN(rawFc) ? rawFc : 0;
+        const fr = !isNaN(rawFr) ? rawFr : 0;
+        const sat = !isNaN(rawSat) ? rawSat : 0;
+        const temp = !isNaN(rawTemp) ? rawTemp : 37.0;
+        const ta = (signos.TA !== null && signos.TA !== undefined && signos.TA !== '') ? String(signos.TA) : '0/0';
+        const ritmo = signos.ritmo || 'sinusal';
 
-    const ritmo = signos.ritmo || 'sinusal';
-    const ritmoAnterior = ecgVitals.ritmo;
+        ecgVitals = { FC: fc, FR: fr, TA: ta, Temperatura: temp, SAT: sat, ritmo: ritmo };
 
-    // Actualizar objeto global para los canales
-    ecgVitals = { FC: fc, FR: fr, TA: ta, Temperatura: temp, SAT: sat, ritmo: ritmo };
+        const arrestNow = isCardiacArrest();
+        if (arrestNow && !wasCardiacArrest) {
+            (window._channels || []).forEach(ch => ch.flattenBuffer());
+        }
+        wasCardiacArrest = arrestNow;
 
-    // Textos estáticos del caso
-    const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    _set('fr-paciente', fr);
-    _set('fc-paciente', fc);
-    _set('ta-paciente', ta);
-    _set('temp-paciente', temp ? temp.toFixed(1) : '--');
-    _set('sat-paciente', sat);
-
-    // Tarjetas del monitor
-    setVitalCard('card-fc', 'vi-fc', fc, fc, 'fc');
-    setVitalCard('card-sat', 'vi-sat', sat, sat + '%', 'sat');
-    setVitalCard('card-temp', 'vi-bis', temp, bis, 'temp');
-    const taSis = parseInt(ta.split('/')[0]) || 0;
-    setVitalCard('card-ta', 'vi-ta', taSis, ta, 'ta');
-    // FR va dentro del bloque CO2
-    const frDisp = document.getElementById('vi-fr');
-    if (frDisp) {
-        frDisp.textContent = fr;
-        const frCls = getVitalClass('fr', fr);
-        const frCard = document.getElementById('card-fr');
-        if (frCard) frCard.className = 'mv-block mv-block-co2' + (frCls !== 'normal' ? ' mv-' + frCls : '');
+        // Textos estáticos de la pestaña Caso
+        const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        _set('fr-paciente', fr);
+        _set('fc-paciente', fc);
+        _set('ta-paciente', ta);
+        _set('temp-paciente', temp ? temp.toFixed(1) : '0.0');
+        _set('sat-paciente', sat);
     }
-    _set('vi-etco2', etco2);
-    _set('vi-temp', temp ? temp.toFixed(1) : '--');
 
-    // Barra de alertas
-    const alertEl = document.getElementById('monitor-alert');
-    if (alertEl) {
-        const alerts = [];
-        if (fc > 100) alerts.push('FC ALTA');
-        if (fc < 60 && fc > 0) alerts.push('FC BAJA');
-        if (sat < 95 && sat > 0) alerts.push('SpO2 BAJA');
-        if (taSis >= 130) alerts.push('TA ALTA');
-        if (temp > 37.5) alerts.push('TEMP ALTA');
-        if (temp < 36.0 && temp > 0) alerts.push('HIPOTERMIA');
-        if (fr > 20) alerts.push('FR ALTA');
-        if (fr < 12 && fr > 0) alerts.push('FR BAJA');
-        if (alerts.length) {
-            alertEl.innerHTML = '⚠ ALERTA: ' + alerts.join(' &nbsp;|&nbsp; ');
-            alertEl.style.display = 'block';
-        } else {
-            alertEl.style.display = 'none';
+    renderMonitorValues();
+    if (window._monitorAudio) {
+        window._monitorAudio.onVitalsUpdated();
+    }
+}
+
+function renderMonitorValues() {
+    const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    const fc = ecgVitals.FC ?? 0;
+    const fr = ecgVitals.FR ?? 0;
+    const sat = ecgVitals.SAT ?? 0;
+    const temp = ecgVitals.Temperatura ?? 37.0;
+    const { sys, dia } = parseTA(ecgVitals.TA);
+    const arrest = isCardiacArrest();
+
+    // Presión arterial media (MAP): 0 si la presión es 0/0
+    const map = (sys <= 0 && dia <= 0) ? 0 : Math.round(dia + (sys - dia) / 3);
+
+    // Capnografía CO2 (etCO2 en mmHg): 0 si FR=0 o paro cardíaco
+    const etco2 = (fr <= 0 || arrest) ? 0 : Math.min(55, Math.max(20, Math.round(38 + (16 - fr) * 0.6)));
+
+    // Pulso periférico: 0 si hay paro circulatorio (FC=0 o TA=0/0)
+    const pulseVal = arrest ? 0 : fc;
+
+    setVitalCard('card-fc', 'vi-fc', fc, arrest ? 0 : fc, 'fc');
+    setVitalCard('card-sat', 'vi-sat', sat, (arrest || sat <= 0) ? 0 : sat, 'sat');
+    setVitalCard('card-co2', 'vi-etco2', fr, etco2, 'fr');
+    setVitalCard('card-fr', 'vi-fr', fr, (arrest || fr <= 0) ? 0 : fr, 'fr');
+    setVitalCard('card-temp', 'vi-temp', temp, temp.toFixed(1), 'temp');
+
+    _set('vi-ta', `${sys}/${dia}`);
+    _set('vi-map', `(${map})`);
+    _set('vi-pulse', pulseVal);
+
+    // Actualizar primera fila del historial NBP con la presión actual
+    const histEl = document.getElementById('vi-nbp-history');
+    if (histEl && histEl.firstElementChild) {
+        const spans = histEl.firstElementChild.querySelectorAll('span');
+        if (spans.length === 2) {
+            spans[1].textContent = `${sys}/${dia} (${map})`;
         }
     }
-
-    // Status bar
-    const overallCls = (fc < 40 || fc > 150 || sat < 90) ? 'critical'
-        : (fc < 60 || fc > 100 || sat < 95) ? 'warning' : '';
-    const bpmEl = document.getElementById('ecg-bpm-display');
-    const ledEl = document.getElementById('ecg-led');
-    const statEl = document.getElementById('ecg-status-text');
-    if (bpmEl) bpmEl.textContent = fc ? `${fc} BPM` : '-- BPM';
-    if (ledEl) ledEl.className = 'ecg-led' + (overallCls ? ' ' + overallCls : '');
-    if (statEl) statEl.textContent = overallCls === 'critical' ? '⚠ CRÍTICO'
-        : overallCls === 'warning' ? '⚠ Advertencia'
-            : fc ? 'NORMAL' : 'Cargando…';
-    const updEl = document.getElementById('ecg-last-update');
-    if (updEl) updEl.textContent = 'Última act: ' +
-        new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 // ═══════════════════════════════════════════════════════
-//  Polling: refrescar signos vitales
+//  Reloj del Monitor
 // ═══════════════════════════════════════════════════════
+function startMonitorClock() {
+    if (connectionTimerInterval) return;
+    const clockEl = document.getElementById('vi-clock');
+    connectionTimerInterval = setInterval(() => {
+        connectionSeconds++;
+        const mins = Math.floor(connectionSeconds / 60);
+        const secs = connectionSeconds % 60;
+        if (clockEl) {
+            clockEl.textContent = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+        }
+    }, 1000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  Sincronización en tiempo real (0ms entre pestañas + Polling 1s sin caché)
+// ═══════════════════════════════════════════════════════
+function handleLiveBroadcast(payload) {
+    if (!payload || !payload.signos) return;
+    if (payload.casoId && parseInt(payload.casoId) !== caseId) {
+        caseId = parseInt(payload.casoId);
+    }
+    updateVitalsUI(payload.signos);
+}
+
+if (typeof BroadcastChannel !== 'undefined') {
+    const liveChannel = new BroadcastChannel('cimed_live_vitals');
+    liveChannel.onmessage = (ev) => {
+        handleLiveBroadcast(ev.data);
+    };
+}
+
+window.addEventListener('storage', (ev) => {
+    if (ev.key === 'cimed_live_vitals' && ev.newValue) {
+        try {
+            handleLiveBroadcast(JSON.parse(ev.newValue));
+        } catch (e) {}
+    }
+});
+
 function pollVitals() {
-    fetch(`./BE/get-case-info.php?id=${caseId}`)
+    fetch(`./BE/get-case-info.php?id=${caseId}&_t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
             if (data.success && data.signos_paciente) updateVitalsUI(data.signos_paciente);
@@ -396,12 +457,28 @@ function pollVitals() {
 }
 
 // ═══════════════════════════════════════════════════════
+//  Redimensionar canales del monitor
+// ═══════════════════════════════════════════════════════
+function resizeMonitorChannels() {
+    let monitorStarted = window._monitorStarted || false;
+    (window._channels || []).forEach(ch => {
+        const parent = ch.canvas.parentElement;
+        if (!parent) return;
+        const rect = parent.getBoundingClientRect();
+        const w = Math.max(Math.floor(rect.width), 50);
+        const h = Math.max(Math.floor(rect.height), 45);
+        ch.resize(w, h);
+        if (!monitorStarted) ch.start();
+    });
+    window._monitorStarted = true;
+}
+
+// ═══════════════════════════════════════════════════════
 //  Tabs
 // ═══════════════════════════════════════════════════════
 function initTabs() {
     const tabs = document.querySelectorAll('.sim-tab');
     const panels = document.querySelectorAll('.sim-panel');
-    let ecgStarted = false;
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -413,19 +490,18 @@ function initTabs() {
             const panel = document.getElementById(panelId);
             if (panel) panel.classList.add('active');
 
-            // Redimensionar + arrancar canales ECG al activar la peñstaña electro
-            if (tab.dataset.tab === 'electro') {
+            if (tab.dataset.tab === 'monitor') {
+                isMonitorTabActive = true;
+                startMonitorClock();
+                if (window._monitorAudio) window._monitorAudio.onConnectStateChange(true);
                 requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {          // 2 frames: panel ya es visible
-                        (window._channels || []).forEach(ch => {
-                            const rect = ch.canvas.parentElement.getBoundingClientRect();
-                            const w = Math.max(rect.width - 2, 50);
-                            ch.resize(w);
-                            if (!ecgStarted) ch.start();   // start() sólo la 1ª vez
-                        });
-                        ecgStarted = true;
+                    requestAnimationFrame(() => {
+                        resizeMonitorChannels();
                     });
                 });
+            } else {
+                isMonitorTabActive = false;
+                if (window._monitorAudio) window._monitorAudio.onConnectStateChange(false);
             }
         });
     });
@@ -438,7 +514,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initTabs();
 
-    fetch(`./BE/get-case-info.php?id=${caseId}`)
+    try {
+        const savedLive = localStorage.getItem('cimed_live_vitals');
+        if (savedLive) {
+            const parsed = JSON.parse(savedLive);
+            if (parsed && parsed.casoId && parsed.ts && (Date.now() - parsed.ts < 3600000)) {
+                caseId = parseInt(parsed.casoId);
+            }
+        }
+    } catch (e) {}
+
+    fetch(`./BE/get-case-info.php?id=${caseId}&_t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
             const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -471,7 +557,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (videos.length === 0) {
                     videosList.innerHTML = '<p class="text-muted">No hay videos disponibles para este caso.</p>';
                 } else {
-                    // Lista de nombres
                     const listEl = document.createElement('ul');
                     listEl.className = 'sim-item-list';
                     videos.forEach((v, i) => {
@@ -483,7 +568,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             const isActive = li.classList.contains('active');
                             listEl.querySelectorAll('.sim-item-list-row').forEach(r => r.classList.remove('active'));
                             if (isActive) {
-                                // Segundo clic → ocultar
                                 previewEl.innerHTML = '';
                                 previewEl.style.display = 'none';
                             } else {
@@ -499,7 +583,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         listEl.appendChild(li);
                     });
 
-                    // Área de preview
                     const previewEl = document.createElement('div');
                     previewEl.className = 'sim-preview-area';
                     previewEl.style.display = 'none';
@@ -515,8 +598,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // ══ Estudios → lista + preview inline ══
             const estudiosContainer = document.getElementById('estudios-container');
             if (estudiosContainer) {
-                estudiosContainer.innerHTML = '';       // limpiar grid anterior
-                estudiosContainer.className = '';       // quitar clases row de Bootstrap
+                estudiosContainer.innerHTML = '';
+                estudiosContainer.className = '';
 
                 if (!data.archivos || data.archivos.length === 0) {
                     estudiosContainer.innerHTML = '<p class="text-muted">No hay estudios disponibles.</p>';
@@ -537,7 +620,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             const isActive = li.classList.contains('active');
                             listEl.querySelectorAll('.sim-item-list-row').forEach(r => r.classList.remove('active'));
                             if (isActive) {
-                                // Segundo clic → ocultar
                                 previewEl.innerHTML = '';
                                 previewEl.style.display = 'none';
                             } else {
@@ -554,38 +636,33 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            preguntas = data.preguntas;
+            preguntas = data.preguntas || [];
             respuestasSeleccionadas = Array(preguntas.length).fill(null);
 
-            // ── Canales del monitor: crear pero NO arrancar aún (panel oculto) ──
+            // ── 4 Canales de onda de RF-02: II (verde), Pleth (azul/cian), CO2 (amarillo), Resp (blanco) ──
             const channelDefs = [
-                { id: 'canvas-ecg', type: 'ecg', color: '#00ff9f' },
-                { id: 'canvas-spo2', type: 'spo2', color: '#4db8ff' },
-                { id: 'canvas-bp', type: 'bp', color: '#ff6060' },
-                { id: 'canvas-eeg', type: 'eeg', color: '#00e5cc' },
+                { id: 'canvas-ecg', type: 'ecg', color: '#25e500' },
+                { id: 'canvas-spo2', type: 'spo2', color: '#1ec8ff' },
                 { id: 'canvas-co2', type: 'co2', color: '#ffee00' },
+                { id: 'canvas-resp', type: 'resp', color: '#cceeff' },
             ];
             window._channels = [];
             channelDefs.forEach(cfg => {
                 const canvas = document.getElementById(cfg.id);
                 if (!canvas) return;
                 const ch = new WaveformChannel(canvas, cfg.type, cfg.color);
-                // No resize ni start todavía; se harán cuando el usuario abra la pestaña Electro
                 window._channels.push(ch);
             });
         })
         .catch(err => console.error('Error al obtener datos:', err));
 
-    setInterval(pollVitals, 3000);
+    // Polling cada 1 segundo sin caché
+    setInterval(pollVitals, 1000);
 
     window.addEventListener('resize', () => {
-        const electroPanel = document.getElementById('panel-electro');
-        if (!electroPanel || !electroPanel.classList.contains('active')) return;
-        (window._channels || []).forEach(ch => {
-            const rect = ch.canvas.parentElement.getBoundingClientRect();
-            const w = Math.max(rect.width - 2, 50);
-            ch.resize(w);
-        });
+        const monitorPanel = document.getElementById('panel-monitor');
+        if (!monitorPanel || !monitorPanel.classList.contains('active')) return;
+        resizeMonitorChannels();
     });
 });
 
@@ -649,13 +726,14 @@ function cambiarPregunta() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  Beep del monitor — sincronizado con FC + alertas
+//  RF-04: Sonido de signos vitales (beeps y alarma continua de paro)
 // ═══════════════════════════════════════════════════════
 (function initBeep() {
     let audioCtx = null;
     let beepInterval = null;
     let muted = false;
     let lastStatus = 'normal';
+    let lastFc = 75;
     let flatlineOsc = null;
     let flatlineGain = null;
 
@@ -664,38 +742,34 @@ function cambiarPregunta() {
         return audioCtx;
     }
 
-    // status: 'normal' | 'warning' | 'critical'
     function getStatus() {
-        const fc = ecgVitals.FC || 0;
-        const sat = ecgVitals.SAT || 0;
-        const ta = parseInt((ecgVitals.TA || '0').split('/')[0]) || 0;
-        const fr = ecgVitals.FR || 0;
+        const fc = ecgVitals.FC ?? 0;
+        const sat = ecgVitals.SAT ?? 0;
+        const { sys } = parseTA(ecgVitals.TA);
+        const fr = ecgVitals.FR ?? 0;
 
-        if (fc < 40 || fc > 150 || sat < 90 || ta >= 180 || fr < 8 || fr > 30)
+        if (fc < 40 || fc > 150 || sat < 90 || sys <= 60 || sys >= 180 || fr < 8 || fr > 30)
             return 'critical';
-        if (fc < 60 || fc > 100 || sat < 95 || ta >= 130 || fr < 12 || fr > 20)
+        if (fc < 60 || fc > 100 || sat < 95 || sys < 90 || sys >= 130 || fr < 12 || fr > 20)
             return 'warning';
         return 'normal';
     }
 
-    // Frecuencia variable del pitido según saturación de oxígeno (SpO₂ acústico)
     function getPitchFreq() {
-        const sat = ecgVitals.SAT || 98;
-        // Mapea SAT (70 a 100) a un pitch audible entre 400Hz y 850Hz
+        const sat = ecgVitals.SAT ?? 98;
         return Math.max(380, Math.min(900, 400 + (sat - 70) * 15));
     }
 
-    // Parámetros de sonido según estado
     function getBeepConfig(status) {
         const baseFreq = getPitchFreq();
         switch (status) {
             case 'critical':
                 return {
-                    freq1: baseFreq * 1.25,   // tono principal (más agudo)
-                    freq2: baseFreq * 0.75,   // tono secundario (alarma dual)
+                    freq1: baseFreq * 1.25,
+                    freq2: baseFreq * 0.75,
                     volume: 0.28,
                     duration: 0.12,
-                    dual: true    // doble pitido
+                    dual: true
                 };
             case 'warning':
                 return {
@@ -705,11 +779,11 @@ function cambiarPregunta() {
                     duration: 0.10,
                     dual: false
                 };
-            default: // normal
+            default:
                 return {
                     freq1: baseFreq,
                     freq2: null,
-                    volume: 0.12,
+                    volume: 0.14,
                     duration: 0.08,
                     dual: false
                 };
@@ -717,7 +791,7 @@ function cambiarPregunta() {
     }
 
     function startFlatline() {
-        if (muted) return;
+        if (!isMonitorTabActive || muted) return;
         if (flatlineOsc) return;
         try {
             const ctx = getAudioCtx();
@@ -727,9 +801,9 @@ function cambiarPregunta() {
             flatlineOsc.connect(flatlineGain);
             flatlineGain.connect(ctx.destination);
             flatlineOsc.type = 'sine';
-            flatlineOsc.frequency.setValueAtTime(450, ctx.currentTime); // 450Hz es la estándar de flatline
+            flatlineOsc.frequency.setValueAtTime(820, ctx.currentTime);
             flatlineGain.gain.setValueAtTime(0.001, ctx.currentTime);
-            flatlineGain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.05);
+            flatlineGain.gain.exponentialRampToValueAtTime(0.24, ctx.currentTime + 0.04);
             flatlineOsc.start();
         } catch (e) {}
     }
@@ -739,19 +813,23 @@ function cambiarPregunta() {
             try {
                 const ctx = getAudioCtx();
                 flatlineGain.gain.setValueAtTime(flatlineGain.gain.value, ctx.currentTime);
-                flatlineGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+                flatlineGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
                 const osc = flatlineOsc;
-                setTimeout(() => { try { osc.stop(); } catch(e) {} }, 60);
-            } catch(e) {}
+                setTimeout(() => { try { osc.stop(); } catch (e) {} }, 50);
+            } catch (e) {}
             flatlineOsc = null;
             flatlineGain = null;
         }
     }
 
     function playBeep() {
-        const rhythm = ecgVitals.ritmo || 'sinusal';
-        const fc = ecgVitals.FC || 0;
-        if (rhythm === 'asistole' || rhythm === 'fv' || fc === 0) {
+        if (!isMonitorTabActive) {
+            stopBeeps();
+            stopFlatline();
+            return;
+        }
+
+        if (isCardiacArrest()) {
             stopBeeps();
             startFlatline();
             return;
@@ -785,9 +863,8 @@ function cambiarPregunta() {
             }
 
             tone(cfg.freq1, 0);
-            if (cfg.dual) tone(cfg.freq2, 140); // segundo tono 140ms después
-
-        } catch (e) { }
+            if (cfg.dual) tone(cfg.freq2, 140);
+        } catch (e) {}
     }
 
     function getMsPerBeat() {
@@ -805,9 +882,13 @@ function cambiarPregunta() {
     }
 
     function scheduleBeeps() {
-        const rhythm = ecgVitals.ritmo || 'sinusal';
-        const fc = ecgVitals.FC || 0;
-        if (rhythm === 'asistole' || rhythm === 'fv' || fc === 0) {
+        if (!isMonitorTabActive) {
+            stopBeeps();
+            stopFlatline();
+            return;
+        }
+
+        if (isCardiacArrest()) {
             stopBeeps();
             startFlatline();
             return;
@@ -815,93 +896,74 @@ function cambiarPregunta() {
 
         stopFlatline();
         if (beepInterval) clearInterval(beepInterval);
+        lastFc = ecgVitals.FC || 75;
+        playBeep();
         beepInterval = setInterval(playBeep, getMsPerBeat());
     }
 
-    // Monitorear cambios cada segundo
-    setInterval(() => {
-        const rhythm = ecgVitals.ritmo || 'sinusal';
-        const fc = ecgVitals.FC || 0;
-        
-        if (rhythm === 'asistole' || rhythm === 'fv' || fc === 0) {
+    function evaluateAudioStateImmediate() {
+        if (!isMonitorTabActive) {
             stopBeeps();
-            if (!muted) {
-                startFlatline();
-            } else {
-                stopFlatline();
-            }
+            stopFlatline();
+            return;
+        }
+
+        if (isCardiacArrest()) {
+            stopBeeps();
+            if (!muted) startFlatline();
+            else stopFlatline();
         } else {
             stopFlatline();
             const status = getStatus();
-            if (status !== lastStatus) {
+            const currentFc = ecgVitals.FC || 75;
+            if (status !== lastStatus || Math.abs(currentFc - lastFc) >= 3 || !beepInterval) {
                 lastStatus = status;
-                scheduleBeeps();
-                flashStatusChange(status);
-            } else if (!beepInterval) {
+                lastFc = currentFc;
                 scheduleBeeps();
             }
         }
-    }, 1000);
-
-    // Efecto visual al cambiar de estado
-    function flashStatusChange(status) {
-        const monitor = document.querySelector('.monitor-pro');
-        if (!monitor) return;
-        const colors = {
-            critical: '0 0 30px rgba(255,50,50,0.6)',
-            warning: '0 0 20px rgba(255,200,0,0.4)',
-            normal: '0 0 40px rgba(0,255,159,0.08)'
-        };
-        monitor.style.transition = 'box-shadow .3s';
-        monitor.style.boxShadow = colors[status];
-        // Flash rápido en crítico
-        if (status === 'critical') {
-            let count = 0;
-            const flash = setInterval(() => {
-                monitor.style.boxShadow = count % 2 === 0
-                    ? '0 0 50px rgba(255,0,0,0.7)'
-                    : colors.critical;
-                if (++count >= 6) clearInterval(flash);
-            }, 150);
-        }
     }
 
-    // Botón mute en el statusbar
-    document.addEventListener('DOMContentLoaded', () => {
-        const statusbar = document.querySelector('.mon-statusbar');
-        if (statusbar) {
-            const btn = document.createElement('button');
-            btn.id = 'btn-mute';
-            btn.innerHTML = '🔊';
-            btn.title = 'Silenciar/Activar beep';
-            btn.style.cssText = `
-                background:none;border:1px solid #333;color:#aaa;
-                font-size:.75rem;padding:2px 10px;border-radius:4px;
-                cursor:pointer;margin-left:10px;font-family:monospace;
-                transition: color .2s, border-color .2s;
-            `;
-            btn.onclick = () => {
-                muted = !muted;
-                btn.innerHTML = muted ? '🔇' : '🔊';
-                btn.style.color = muted ? '#444' : '#aaa';
-                btn.style.borderColor = muted ? '#222' : '#333';
-                if (!muted && audioCtx?.state === 'suspended') audioCtx.resume();
+    setInterval(evaluateAudioStateImmediate, 500);
 
-                const rhythm = ecgVitals.ritmo || 'sinusal';
-                const fc = ecgVitals.FC || 0;
-                if (rhythm === 'asistole' || rhythm === 'fv' || fc === 0) {
+    window._monitorAudio = {
+        onConnectStateChange(active) {
+            if (active) {
+                const ctx = getAudioCtx();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+                evaluateAudioStateImmediate();
+            } else {
+                stopBeeps();
+                stopFlatline();
+            }
+        },
+        onVitalsUpdated() {
+            evaluateAudioStateImmediate();
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('btn-mute');
+        const alarmStateEl = document.getElementById('vsm-top-alarm-state');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                muted = !muted;
+                btn.classList.toggle('is-muted', muted);
+                if (alarmStateEl) {
+                    alarmStateEl.textContent = muted ? 'Silenced' : 'On';
+                }
+                if (!muted && audioCtx?.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                if (!isMonitorTabActive) return;
+
+                if (isCardiacArrest()) {
                     if (muted) stopFlatline();
                     else startFlatline();
                 }
-            };
-            statusbar.appendChild(btn);
+            });
         }
-
-        // Arrancar al primer clic (política autoplay del navegador)
-        document.addEventListener('click', function startAudio() {
-            scheduleBeeps();
-            document.removeEventListener('click', startAudio);
-        }, { once: true });
     });
 })();
 
