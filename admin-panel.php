@@ -612,19 +612,56 @@ if (isset($_SESSION['correo'])) {
                                 </div>
                             </div>
 
-                            <!-- ── Signos vitales con sliders ── -->
+                            <!-- ── Signos vitales con sliders (ordenados igual que el Monitor) ── -->
                             <div class="vitals-sliders-section">
                                 <h6 class="fw-bold mb-3"
                                     style="color:#2f50ff;border-bottom:2px solid #dce0f3;padding-bottom:6px;">
                                     <i class="bi bi-activity me-1"></i> Signos Vitales (actualizan en tiempo real)
                                 </h6>
 
-                                <!-- FR -->
+                                <!-- 1. FC (HR / Pulse — 1º en el Monitor) -->
+                                <div class="vital-slider-row mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label mb-0 fw-semibold">
+                                            <i class="bi bi-heart-pulse me-1" style="color:#198754"></i>
+                                            1. Frecuencia Cardíaca <small class="text-muted fw-normal">(HR / Pulse)</small>
+                                        </label>
+                                        <span class="vital-badge" id="fc-badge">
+                                            <span id="fc-display">--</span> bpm
+                                        </span>
+                                    </div>
+                                    <input type="range" class="form-range vital-range" id="patientFc" min="0" max="250"
+                                        step="1" value="75">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
+                                        <span>0</span><span style="color:#198754">Normal: 60–100</span><span>250</span>
+                                    </div>
+                                </div>
+
+                                <!-- 2. SAT (SpO2 / Pleth — 2º en el Monitor) -->
+                                <div class="vital-slider-row mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label mb-0 fw-semibold">
+                                            <i class="bi bi-moisture me-1" style="color:#0dcaf0"></i>
+                                            2. Saturación de Oxígeno <small class="text-muted fw-normal">(SpO₂ / Pleth)</small>
+                                        </label>
+                                        <span class="vital-badge" id="sat-badge">
+                                            <span id="sat-display">--</span> %
+                                        </span>
+                                    </div>
+                                    <input type="range" class="form-range vital-range" id="patientSat" min="0" max="100"
+                                        step="1" value="98">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
+                                        <span>0%</span><span style="color:#198754">Normal:
+                                            95–100%</span><span>100%</span>
+                                    </div>
+                                </div>
+
+                                <!-- 3. FR (CO2 / RR / Resp — 3º y 4º en el Monitor) -->
                                 <div class="vital-slider-row mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label class="form-label mb-0 fw-semibold">
                                             <i class="bi bi-lungs me-1" style="color:#17a2b8"></i>
-                                            Frecuencia Respiratoria
+                                            3. Frecuencia Respiratoria <small class="text-muted fw-normal">(CO₂ / RR)</small>
                                         </label>
                                         <span class="vital-badge" id="fr-badge">
                                             <span id="fr-display">--</span> rpm
@@ -637,30 +674,12 @@ if (isset($_SESSION['correo'])) {
                                     </div>
                                 </div>
 
-                                <!-- FC -->
-                                <div class="vital-slider-row mb-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label mb-0 fw-semibold">
-                                            <i class="bi bi-heart-pulse me-1" style="color:#dc3545"></i>
-                                            Frecuencia Cardíaca
-                                        </label>
-                                        <span class="vital-badge" id="fc-badge">
-                                            <span id="fc-display">--</span> lpm
-                                        </span>
-                                    </div>
-                                    <input type="range" class="form-range vital-range" id="patientFc" min="0" max="250"
-                                        step="1" value="75">
-                                    <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
-                                        <span>0</span><span style="color:#198754">Normal: 60–100</span><span>250</span>
-                                    </div>
-                                </div>
-
-                                <!-- TA (dos sliders: sistólica y diastólica) -->
+                                <!-- 4. TA (NBP — Barra inferior morada en el Monitor) -->
                                 <div class="vital-slider-row mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label class="form-label mb-0 fw-semibold">
                                             <i class="bi bi-droplet-half me-1" style="color:#6f42c1"></i>
-                                            Tensión Arterial
+                                            4. Tensión Arterial <small class="text-muted fw-normal">(NBP)</small>
                                         </label>
                                         <span class="vital-badge" id="ta-badge">
                                             <span id="ta-sis-display">--</span>/<span id="ta-dia-display">--</span> mmHg
@@ -668,28 +687,28 @@ if (isset($_SESSION['correo'])) {
                                     </div>
                                     <div class="d-flex align-items-center gap-2 mb-1">
                                         <small class="text-muted" style="min-width:70px;">Sistólica</small>
-                                        <input type="range" class="form-range vital-range" id="patientTaSis" min="60"
+                                        <input type="range" class="form-range vital-range" id="patientTaSis" min="0"
                                             max="220" step="1" value="120">
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <small class="text-muted" style="min-width:70px;">Diastólica</small>
-                                        <input type="range" class="form-range vital-range" id="patientTaDia" min="40"
+                                        <input type="range" class="form-range vital-range" id="patientTaDia" min="0"
                                             max="140" step="1" value="80">
                                     </div>
                                     <!-- Campo oculto para la TA combinada -->
                                     <input type="hidden" id="patientTa" value="120/80">
                                     <div class="d-flex justify-content-between text-muted mt-1"
                                         style="font-size:0.75rem;">
-                                        <span></span><span style="color:#198754">Normal: &lt;120/80</span><span></span>
+                                        <span>0/0 (Paro)</span><span style="color:#198754">Normal: &lt;120/80</span><span>220/140</span>
                                     </div>
                                 </div>
 
-                                <!-- Temperatura -->
-                                <div class="vital-slider-row mb-4">
+                                <!-- 5. Temperatura (Temp — Columna derecha en el Monitor) -->
+                                <div class="vital-slider-row mb-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label class="form-label mb-0 fw-semibold">
-                                            <i class="bi bi-thermometer-half me-1" style="color:#fd7e14"></i>
-                                            Temperatura
+                                            <i class="bi bi-thermometer-half me-1" style="color:#20c997"></i>
+                                            5. Temperatura <small class="text-muted fw-normal">(Temp °C)</small>
                                         </label>
                                         <span class="vital-badge" id="temp-badge">
                                             <span id="temp-display">--</span> °C
@@ -700,25 +719,6 @@ if (isset($_SESSION['correo'])) {
                                     <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
                                         <span>34°C</span><span style="color:#198754">Normal:
                                             36.1–37.2</span><span>43°C</span>
-                                    </div>
-                                </div>
-
-                                <!-- SAT -->
-                                <div class="vital-slider-row mb-2">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label mb-0 fw-semibold">
-                                            <i class="bi bi-moisture me-1" style="color:#20c997"></i>
-                                            Saturación de Oxígeno
-                                        </label>
-                                        <span class="vital-badge" id="sat-badge">
-                                            <span id="sat-display">--</span> %
-                                        </span>
-                                    </div>
-                                    <input type="range" class="form-range vital-range" id="patientSat" min="0" max="100"
-                                        step="1" value="98">
-                                    <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
-                                        <span>0%</span><span style="color:#198754">Normal:
-                                            95–100%</span><span>100%</span>
                                     </div>
                                 </div>
 
@@ -975,8 +975,8 @@ if (isset($_SESSION['correo'])) {
         const RHYTHM_PRESETS_ADMIN = {
             sinusal: { FC: 72, FR: 16, TA_sis: 120, TA_dia: 80, label: 'Ritmo Sinusal', color: '#198754' },
             taquicardia: { FC: 150, FR: 20, TA_sis: 130, TA_dia: 85, label: 'Taquicardia', color: '#fd7e14' },
-            asistole: { FC: 0, FR: 0, TA_sis: 60, TA_dia: 40, label: 'Asistole', color: '#dc3545' },
-            fv: { FC: 0, FR: 4, TA_sis: 60, TA_dia: 40, label: 'Fibrilación Ventricular', color: '#dc3545' },
+            asistole: { FC: 0, FR: 0, TA_sis: 0, TA_dia: 0, label: 'Asistole', color: '#dc3545' },
+            fv: { FC: 0, FR: 0, TA_sis: 0, TA_dia: 0, label: 'Fibrilación Ventricular', color: '#dc3545' },
             st_depresion: { FC: 72, FR: 18, TA_sis: 140, TA_dia: 90, label: 'ST Depresión', color: '#e65100' },
             st_elevacion: { FC: 90, FR: 22, TA_sis: 160, TA_dia: 100, label: 'ST Elevación', color: '#c62828' },
         };
