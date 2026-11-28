@@ -7,7 +7,7 @@ let bloqueado = false;
 // ═══════════════════════════════════════════════════════
 //  Signos vitales globales y estado del Monitor
 // ═══════════════════════════════════════════════════════
-let ecgVitals = { FC: 75, FR: 16, TA: '120/80', Temperatura: 37.0, SAT: 98, ritmo: 'sinusal' };
+let ecgVitals = { FC: 75, FR: 16, CO2: 38, TA: '120/80', Temperatura: 37.0, SAT: 98, ritmo: 'sinusal' };
 let isPatientConnected = true;
 let isMonitorTabActive = false;
 let connectionSeconds = 0;
@@ -139,11 +139,13 @@ class WaveformChannel {
 
     _co2Sample(t) {
         const fr = ecgVitals.FR ?? 0;
-        if (fr <= 0 || isCardiacArrest()) return 0;
+        const co2 = ecgVitals.CO2 ?? 38;
+        if (fr <= 0 || co2 <= 0 || isCardiacArrest()) return 0;
+        const scale = Math.min(1.0, Math.max(0.15, co2 / 45));
         if (t < 0.07) return 0;
-        if (t < 0.17) return (t - 0.07) / 0.10;
-        if (t < 0.58) return 1.0 - (t - 0.17) / 0.41 * 0.07;
-        if (t < 0.66) return Math.max(0, 0.93 - (t - 0.58) / 0.08 * 0.93);
+        if (t < 0.17) return ((t - 0.07) / 0.10) * scale;
+        if (t < 0.58) return (1.0 - (t - 0.17) / 0.41 * 0.07) * scale;
+        if (t < 0.66) return Math.max(0, 0.93 - (t - 0.58) / 0.08 * 0.93) * scale;
         return 0;
     }
 
@@ -184,7 +186,8 @@ class WaveformChannel {
         const arrest = isCardiacArrest();
         if (this.type === 'ecg') return arrest && rhythm !== 'fv';
         if (this.type === 'spo2') return arrest || (ecgVitals.SAT ?? 0) <= 0;
-        if (this.type === 'co2' || this.type === 'resp') return arrest || (ecgVitals.FR ?? 0) <= 0;
+        if (this.type === 'co2') return arrest || (ecgVitals.FR ?? 0) <= 0 || (ecgVitals.CO2 ?? 38) <= 0;
+        if (this.type === 'resp') return arrest || (ecgVitals.FR ?? 0) <= 0;
         return false;
     }
 
@@ -202,7 +205,7 @@ class WaveformChannel {
         const isFV = (this.type === 'ecg' && rhythm === 'fv');
 
         if (this.type === 'co2') {
-            if ((ecgVitals.FR ?? 0) <= 0 || arrest) {
+            if ((ecgVitals.FR ?? 0) <= 0 || (ecgVitals.CO2 ?? 38) <= 0 || arrest) {
                 this.data[this.writePos] = cx;
             } else {
                 this.data[this.writePos] = (this.height - 12) - val * (this.height - 26);
@@ -312,6 +315,11 @@ function getVitalClass(type, value) {
         if (value < 90 || value >= 130) return 'warning';
         return 'normal';
     }
+    if (type === 'co2') {
+        if (value < 25 || value > 55) return 'critical';
+        if (value < 35 || value > 45) return 'warning';
+        return 'normal';
+    }
     return 'normal';
 }
 
@@ -333,17 +341,19 @@ function updateVitalsUI(signos) {
     if (signos) {
         const rawFc = parseInt(signos.FC);
         const rawFr = parseInt(signos.FR);
+        const rawCo2 = parseInt(signos.CO2);
         const rawSat = parseInt(signos.SAT);
         const rawTemp = parseFloat(signos.Temperatura);
 
         const fc = !isNaN(rawFc) ? rawFc : 0;
         const fr = !isNaN(rawFr) ? rawFr : 0;
+        const co2 = !isNaN(rawCo2) ? rawCo2 : 38;
         const sat = !isNaN(rawSat) ? rawSat : 0;
         const temp = !isNaN(rawTemp) ? rawTemp : 37.0;
         const ta = (signos.TA !== null && signos.TA !== undefined && signos.TA !== '') ? String(signos.TA) : '0/0';
         const ritmo = signos.ritmo || 'sinusal';
 
-        ecgVitals = { FC: fc, FR: fr, TA: ta, Temperatura: temp, SAT: sat, ritmo: ritmo };
+        ecgVitals = { FC: fc, FR: fr, CO2: co2, TA: ta, Temperatura: temp, SAT: sat, ritmo: ritmo };
 
         const arrestNow = isCardiacArrest();
         if (arrestNow && !wasCardiacArrest) {
@@ -371,6 +381,7 @@ function renderMonitorValues() {
 
     const fc = ecgVitals.FC ?? 0;
     const fr = ecgVitals.FR ?? 0;
+    const co2 = ecgVitals.CO2 ?? 38;
     const sat = ecgVitals.SAT ?? 0;
     const temp = ecgVitals.Temperatura ?? 37.0;
     const { sys, dia } = parseTA(ecgVitals.TA);
@@ -379,15 +390,15 @@ function renderMonitorValues() {
     // Presión arterial media (MAP): 0 si la presión es 0/0
     const map = (sys <= 0 && dia <= 0) ? 0 : Math.round(dia + (sys - dia) / 3);
 
-    // Capnografía CO2 (etCO2 en mmHg): 0 si FR=0 o paro cardíaco
-    const etco2 = (fr <= 0 || arrest) ? 0 : Math.min(55, Math.max(20, Math.round(38 + (16 - fr) * 0.6)));
+    // Capnografía CO2 (etCO2 en mmHg): valor controlado desde el panel (0 si FR=0, CO2=0 o paro cardíaco)
+    const etco2 = (fr <= 0 || co2 <= 0 || arrest) ? 0 : co2;
 
     // Pulso periférico: 0 si hay paro circulatorio (FC=0 o TA=0/0)
     const pulseVal = arrest ? 0 : fc;
 
     setVitalCard('card-fc', 'vi-fc', fc, arrest ? 0 : fc, 'fc');
     setVitalCard('card-sat', 'vi-sat', sat, (arrest || sat <= 0) ? 0 : sat, 'sat');
-    setVitalCard('card-co2', 'vi-etco2', fr, etco2, 'fr');
+    setVitalCard('card-co2', 'vi-etco2', etco2, etco2, 'co2');
     setVitalCard('card-fr', 'vi-fr', fr, (arrest || fr <= 0) ? 0 : fr, 'fr');
     setVitalCard('card-temp', 'vi-temp', temp, temp.toFixed(1), 'temp');
 
@@ -447,10 +458,33 @@ window.addEventListener('storage', (ev) => {
     }
 });
 
+function updateMonitorTopbar(paciente) {
+    if (!paciente) return;
+    const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    const edad = parseInt(paciente.edad);
+    let category = 'Adult';
+    if (!isNaN(edad)) {
+        if (edad < 1) category = 'Neonate';
+        else if (edad < 15) category = 'Pediatric';
+    }
+
+    const sexoStr = String(paciente.sexo || '').trim();
+    const sexoShort = /^m(ujer|f)/i.test(sexoStr) || /^f/i.test(sexoStr) ? 'F'
+                    : (/^h(ombre)|^m(asc)/i.test(sexoStr) ? 'M' : '');
+    const edadInfo = !isNaN(edad) ? `${edad}a${sexoShort ? ' • ' + sexoShort : ''}` : '';
+
+    _set('vsm-top-patient-name', paciente.nombre || category);
+    _set('vsm-top-bed', caseId ? `ICU ${caseId}` : 'ICU 1');
+    _set('vsm-top-category', edadInfo ? `${category} (${edadInfo})` : category);
+    _set('vsm-top-profile', paciente.peso ? `${category} (${paciente.peso} kg)` : category);
+}
+
 function pollVitals() {
     fetch(`./BE/get-case-info.php?id=${caseId}&_t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
+            if (data.paciente) updateMonitorTopbar(data.paciente);
             if (data.success && data.signos_paciente) updateVitalsUI(data.signos_paciente);
         })
         .catch(() => { });
@@ -530,6 +564,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
             _set('nombre-paciente', data.paciente.nombre);
+            updateMonitorTopbar(data.paciente);
             _set('nombre-caso', data.caso.nombre);
             _set('descripcion-caso', data.caso.descripcion);
             _set('sexo-paciente', data.paciente.sexo);

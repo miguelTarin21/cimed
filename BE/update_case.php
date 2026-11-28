@@ -63,12 +63,20 @@ if (isset($data['caso'], $data['paciente'], $data['preguntas'], $data['rutas']))
     $stmtCaso->fetch();
     $stmtCaso->close();
 
+    // Asegurar columna CO2 en signos_pacientes si aún no existe
+    $colCheck = $conn->query("SHOW COLUMNS FROM `signos_pacientes` LIKE 'CO2'");
+    if ($colCheck && $colCheck->num_rows === 0) {
+        $conn->query("ALTER TABLE `signos_pacientes` ADD COLUMN `CO2` int(11) DEFAULT 38");
+    }
+
     // Actualizar los signos vitales del paciente
     $ritmo = isset($pacienteInfo['ritmo']) ? $pacienteInfo['ritmo'] : 'sinusal';
-    $stmt = $conn->prepare("UPDATE signos_pacientes SET FR = ?, FC = ?, TA = ?, Temperatura = ?, SAT = ?, ritmo = ? WHERE id_paciente = ?");
-    $stmt->bind_param("iisdisi", 
+    $co2   = isset($pacienteInfo['co2'])   ? intval($pacienteInfo['co2']) : 38;
+    $stmt = $conn->prepare("UPDATE signos_pacientes SET FR = ?, FC = ?, CO2 = ?, TA = ?, Temperatura = ?, SAT = ?, ritmo = ? WHERE id_paciente = ?");
+    $stmt->bind_param("iiisdisi", 
         $pacienteInfo['frecuenciaRespiratoria'], 
         $pacienteInfo['frecuenciaCardiaca'], 
+        $co2,
         $pacienteInfo['tensionArterial'], 
         $pacienteInfo['temperatura'], 
         $pacienteInfo['saturacion'], 

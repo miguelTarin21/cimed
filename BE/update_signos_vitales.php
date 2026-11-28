@@ -19,10 +19,17 @@ if (!isset($data['casoId'])) {
 $casoId   = intval($data['casoId']);
 $fr       = isset($data['FR'])          ? intval($data['FR'])          : null;
 $fc       = isset($data['FC'])          ? intval($data['FC'])          : null;
+$co2      = isset($data['CO2'])         ? intval($data['CO2'])         : 38;
 $ta       = isset($data['TA'])          ? $data['TA']                  : null;
 $temp     = isset($data['Temperatura']) ? floatval($data['Temperatura']) : null;
 $sat      = isset($data['SAT'])         ? intval($data['SAT'])         : null;
 $ritmo    = isset($data['ritmo'])       ? $data['ritmo']               : 'sinusal';
+
+// Asegurar columna CO2 en signos_pacientes si aún no existe
+$colCheck = $conn->query("SHOW COLUMNS FROM `signos_pacientes` LIKE 'CO2'");
+if ($colCheck && $colCheck->num_rows === 0) {
+    $conn->query("ALTER TABLE `signos_pacientes` ADD COLUMN `CO2` int(11) DEFAULT 38");
+}
 
 // Obtener el id de signos_pacientes del caso
 $stmt = $conn->prepare(
@@ -45,9 +52,9 @@ $signosId = $row['id'];
 
 // Actualizar los signos vitales
 $stmt = $conn->prepare(
-    "UPDATE signos_pacientes SET FR = ?, FC = ?, TA = ?, Temperatura = ?, SAT = ?, ritmo = ? WHERE id = ?"
+    "UPDATE signos_pacientes SET FR = ?, FC = ?, CO2 = ?, TA = ?, Temperatura = ?, SAT = ?, ritmo = ? WHERE id = ?"
 );
-$stmt->bind_param('iisdisi', $fr, $fc, $ta, $temp, $sat, $ritmo, $signosId);
+$stmt->bind_param('iiisdisi', $fr, $fc, $co2, $ta, $temp, $sat, $ritmo, $signosId);
 
 if ($stmt->execute()) {
     // Actualizar la fecha del caso

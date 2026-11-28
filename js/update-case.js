@@ -20,52 +20,61 @@ function updateVitalBadge(badgeId, value, type) {
         // value = sistólica
         if (value <= 60 || value >= 180) cls = 'critical';
         else if (value < 90 || value >= 130) cls = 'warning';
+    } else if (type === 'co2') {
+        if (value < 25 || value > 55) cls = 'critical';
+        else if (value < 35 || value > 45) cls = 'warning';
     }
     badge.classList.add(cls);
 }
 
 function initSliderListeners() {
-    const frSlider   = document.getElementById('patientFr');
-    const fcSlider   = document.getElementById('patientFc');
+    const frSlider    = document.getElementById('patientFr');
+    const fcSlider    = document.getElementById('patientFc');
+    const co2Slider   = document.getElementById('patientCo2');
     const taSisSlider = document.getElementById('patientTaSis');
     const taDiaSlider = document.getElementById('patientTaDia');
-    const tempSlider = document.getElementById('patientTemp');
-    const satSlider  = document.getElementById('patientSat');
+    const tempSlider  = document.getElementById('patientTemp');
+    const satSlider   = document.getElementById('patientSat');
 
     function onSliderChange() {
         // Actualizar displays
-        const fr   = parseInt(frSlider.value);
-        const fc   = parseInt(fcSlider.value);
+        const fr    = parseInt(frSlider.value);
+        const fc    = parseInt(fcSlider.value);
+        const co2   = co2Slider ? parseInt(co2Slider.value) : 38;
         const taSis = parseInt(taSisSlider.value);
         const taDia = parseInt(taDiaSlider.value);
-        const temp = parseFloat(tempSlider.value);
-        const sat  = parseInt(satSlider.value);
+        const temp  = parseFloat(tempSlider.value);
+        const sat   = parseInt(satSlider.value);
 
-        document.getElementById('fr-display').textContent   = fr;
-        document.getElementById('fc-display').textContent   = fc;
+        document.getElementById('fr-display').textContent     = fr;
+        document.getElementById('fc-display').textContent     = fc;
+        if (document.getElementById('co2-display')) {
+            document.getElementById('co2-display').textContent = co2;
+        }
         document.getElementById('ta-sis-display').textContent = taSis;
         document.getElementById('ta-dia-display').textContent = taDia;
-        document.getElementById('temp-display').textContent  = temp.toFixed(1);
-        document.getElementById('sat-display').textContent   = sat;
+        document.getElementById('temp-display').textContent   = temp.toFixed(1);
+        document.getElementById('sat-display').textContent    = sat;
 
         // Actualizar campo oculto de TA
         document.getElementById('patientTa').value = `${taSis}/${taDia}`;
 
         // Colores badge
-        updateVitalBadge('fr-badge',   fr,   'fr');
-        updateVitalBadge('fc-badge',   fc,   'fc');
-        updateVitalBadge('ta-badge',   taSis,'ta');
-        updateVitalBadge('temp-badge', temp, 'temp');
-        updateVitalBadge('sat-badge',  sat,  'sat');
+        updateVitalBadge('fr-badge',   fr,    'fr');
+        updateVitalBadge('fc-badge',   fc,    'fc');
+        updateVitalBadge('co2-badge',  co2,   'co2');
+        updateVitalBadge('ta-badge',   taSis, 'ta');
+        updateVitalBadge('temp-badge', temp,  'temp');
+        updateVitalBadge('sat-badge',  sat,   'sat');
 
         // Guardar en tiempo real si hay un caso cargado
         if (window._caseIdToEdit) {
             const ritmo = window.currentRhythm || 'sinusal';
-            saveVitalSigns(window._caseIdToEdit, fr, fc, `${taSis}/${taDia}`, temp, sat, ritmo);
+            saveVitalSigns(window._caseIdToEdit, fr, fc, `${taSis}/${taDia}`, temp, sat, ritmo, co2);
         }
     }
 
-    [frSlider, fcSlider, taSisSlider, taDiaSlider, tempSlider, satSlider].forEach(slider => {
+    [frSlider, fcSlider, co2Slider, taSisSlider, taDiaSlider, tempSlider, satSlider].forEach(slider => {
         if (slider) slider.addEventListener('input', onSliderChange);
     });
 }
@@ -75,12 +84,13 @@ const liveVitalsChannel = (typeof BroadcastChannel !== 'undefined')
     ? new BroadcastChannel('cimed_live_vitals')
     : null;
 
-function broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo) {
+function broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo, co2 = 38) {
     const payload = {
         casoId: parseInt(casoId),
         signos: {
             FR: fr,
             FC: fc,
+            CO2: co2,
             TA: ta,
             Temperatura: temp,
             SAT: sat,
@@ -97,9 +107,9 @@ function broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo) {
 }
 
 let saveTimeout = null;
-function saveVitalSigns(casoId, fr, fc, ta, temp, sat, ritmo) {
+function saveVitalSigns(casoId, fr, fc, ta, temp, sat, ritmo, co2 = 38) {
     // Emitir instantáneamente (0ms) al monitor abierto en el navegador
-    broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo);
+    broadcastLiveVitals(casoId, fr, fc, ta, temp, sat, ritmo, co2);
 
     const status = document.getElementById('realtime-status');
     clearTimeout(saveTimeout);
@@ -112,7 +122,7 @@ function saveVitalSigns(casoId, fr, fc, ta, temp, sat, ritmo) {
             const res = await fetch('./BE/update_signos_vitales.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ casoId, FR: fr, FC: fc, TA: ta, Temperatura: temp, SAT: sat, ritmo: ritmo })
+                body: JSON.stringify({ casoId, FR: fr, FC: fc, CO2: co2, TA: ta, Temperatura: temp, SAT: sat, ritmo: ritmo })
             });
             const data = await res.json();
             if (status) {
@@ -187,13 +197,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('patientEnfermedades').value = data.paciente.enfermedades;
 
                 // Rellenar sliders de signos vitales (respetando el valor 0 en paro)
-                const rawFr = parseInt(data.signos_paciente.FR);
-                const rawFc = parseInt(data.signos_paciente.FC);
-                const rawSat = parseInt(data.signos_paciente.SAT);
+                const rawFr   = parseInt(data.signos_paciente.FR);
+                const rawFc   = parseInt(data.signos_paciente.FC);
+                const rawCo2  = parseInt(data.signos_paciente.CO2);
+                const rawSat  = parseInt(data.signos_paciente.SAT);
                 const rawTemp = parseFloat(data.signos_paciente.Temperatura);
 
                 const fr   = !isNaN(rawFr)   ? rawFr   : 16;
                 const fc   = !isNaN(rawFc)   ? rawFc   : 75;
+                const co2  = !isNaN(rawCo2)  ? rawCo2  : 38;
                 const ta   = (data.signos_paciente.TA !== null && data.signos_paciente.TA !== undefined && data.signos_paciente.TA !== '')
                              ? data.signos_paciente.TA : '120/80';
                 const temp = !isNaN(rawTemp) ? rawTemp : 37.0;
@@ -208,6 +220,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 document.getElementById('patientFr').value    = fr;
                 document.getElementById('patientFc').value    = fc;
+                if (document.getElementById('patientCo2')) {
+                    document.getElementById('patientCo2').value = co2;
+                }
                 document.getElementById('patientTaSis').value = taSis;
                 document.getElementById('patientTaDia').value = taDia;
                 document.getElementById('patientTa').value    = ta;
@@ -215,16 +230,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('patientSat').value   = sat;
 
                 // Actualizar displays de valor
-                document.getElementById('fr-display').textContent    = fr;
-                document.getElementById('fc-display').textContent    = fc;
+                document.getElementById('fr-display').textContent     = fr;
+                document.getElementById('fc-display').textContent     = fc;
+                if (document.getElementById('co2-display')) {
+                    document.getElementById('co2-display').textContent = co2;
+                }
                 document.getElementById('ta-sis-display').textContent = taSis;
                 document.getElementById('ta-dia-display').textContent = taDia;
-                document.getElementById('temp-display').textContent  = parseFloat(temp).toFixed(1);
-                document.getElementById('sat-display').textContent   = sat;
+                document.getElementById('temp-display').textContent   = parseFloat(temp).toFixed(1);
+                document.getElementById('sat-display').textContent    = sat;
 
                 // Colores badge
                 updateVitalBadge('fr-badge',   fr,    'fr');
                 updateVitalBadge('fc-badge',   fc,    'fc');
+                updateVitalBadge('co2-badge',  co2,   'co2');
                 updateVitalBadge('ta-badge',   taSis, 'ta');
                 updateVitalBadge('temp-badge', temp,  'temp');
                 updateVitalBadge('sat-badge',  sat,   'sat');
@@ -232,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Precargar ritmo cardíaco activo
                 const ritmo = data.signos_paciente.ritmo || 'sinusal';
                 window.currentRhythm = ritmo;
-                broadcastLiveVitals(caseId, fr, fc, `${taSis}/${taDia}`, temp, sat, ritmo);
+                broadcastLiveVitals(caseId, fr, fc, `${taSis}/${taDia}`, temp, sat, ritmo, co2);
                 document.querySelectorAll('.btn-rhythm-admin').forEach(b => {
                     b.style.opacity    = '0.45';
                     b.style.fontWeight = '500';
@@ -752,6 +771,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 enfermedades: patientenfermedades,
                 frecuenciaRespiratoria: document.getElementById('patientFr').value,
                 frecuenciaCardiaca: document.getElementById('patientFc').value,
+                co2: document.getElementById('patientCo2') ? document.getElementById('patientCo2').value : 38,
                 tensionArterial: document.getElementById('patientTa').value,
                 temperatura: document.getElementById('patientTemp').value,
                 saturacion: document.getElementById('patientSat').value,

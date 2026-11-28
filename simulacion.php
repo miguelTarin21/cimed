@@ -198,15 +198,15 @@ $caseId = isset($_GET['id']) ? intval($_GET['id']) : 0;
                     <div class="vsm-topbar">
                         <div class="vsm-patient-btn" id="btn-connect-patient">
                             <i class="bi bi-person-fill vsm-patient-icon"></i>
-                            <span class="vsm-patient-label">Adult</span>
+                            <span class="vsm-patient-label" id="vsm-top-patient-name">Adult</span>
                         </div>
                         <div class="vsm-top-cell">
                             <span class="vsm-top-lbl">Bed</span>
-                            <span class="vsm-top-val">ICU 1</span>
+                            <span class="vsm-top-val" id="vsm-top-bed">ICU 1</span>
                         </div>
                         <div class="vsm-top-cell">
                             <span class="vsm-top-lbl">Patient category</span>
-                            <span class="vsm-top-val">Adult</span>
+                            <span class="vsm-top-val" id="vsm-top-category">Adult</span>
                         </div>
                         <div class="vsm-top-cell">
                             <span class="vsm-top-lbl">Paced mode</span>
@@ -228,7 +228,7 @@ $caseId = isset($_GET['id']) ? intval($_GET['id']) : 0;
                         </div>
                         <div class="vsm-top-cell">
                             <span class="vsm-top-lbl">Profile</span>
-                            <span class="vsm-top-val">Adult</span>
+                            <span class="vsm-top-val" id="vsm-top-profile">Adult</span>
                         </div>
                         <div class="vsm-top-icons">
                             <i class="bi bi-plug-fill" title="Corriente AC"></i>

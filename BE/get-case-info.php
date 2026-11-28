@@ -82,12 +82,18 @@ $stmtCaso->bind_result($id_paciente);
 $stmtCaso->fetch();
 $stmtCaso->close();
 
+// Asegurar columna CO2 en signos_pacientes si aún no existe
+$colCheck = $conn->query("SHOW COLUMNS FROM `signos_pacientes` LIKE 'CO2'");
+if ($colCheck && $colCheck->num_rows === 0) {
+    $conn->query("ALTER TABLE `signos_pacientes` ADD COLUMN `CO2` int(11) DEFAULT 38");
+}
+
 // Consultar la tabla de "signos_pacientes" usando el id_paciente obtenido
-$sqlPacienteSignos = "SELECT FR, FC, TA, Temperatura, SAT, ritmo FROM signos_pacientes WHERE id_paciente = ?";
+$sqlPacienteSignos = "SELECT FR, FC, CO2, TA, Temperatura, SAT, ritmo FROM signos_pacientes WHERE id_paciente = ?";
 $stmtPacienteSignos = $conn->prepare($sqlPacienteSignos);
 $stmtPacienteSignos->bind_param('i', $id_paciente);
 $stmtPacienteSignos->execute();
-$stmtPacienteSignos->bind_result($FR, $FC, $TA, $Temperatura, $SAT, $ritmo);
+$stmtPacienteSignos->bind_result($FR, $FC, $CO2, $TA, $Temperatura, $SAT, $ritmo);
 $stmtPacienteSignos->fetch();
 $stmtPacienteSignos->close();
 
@@ -95,6 +101,7 @@ $stmtPacienteSignos->close();
 $response['signos_paciente'] = [
     'FR' => $FR,
     'FC' => $FC,
+    'CO2' => $CO2 !== null ? $CO2 : 38,
     'TA' => $TA,
     'Temperatura' => $Temperatura,
     'SAT' => $SAT,

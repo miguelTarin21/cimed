@@ -107,6 +107,7 @@ CREATE TABLE `signos_pacientes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `FR` int(11) DEFAULT NULL,
   `FC` int(11) DEFAULT NULL,
+  `CO2` int(11) DEFAULT 38,
   `TA` varchar(50) DEFAULT NULL,
   `Temperatura` double DEFAULT NULL,
   `SAT` int(11) DEFAULT NULL,
@@ -116,12 +117,12 @@ CREATE TABLE `signos_pacientes` (
   KEY `id_paciente` (`id_paciente`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `signos_pacientes` (`id`, `FR`, `FC`, `TA`, `Temperatura`, `SAT`, `id_paciente`, `ritmo`) VALUES
-(5, 18, 92, '90/80', 36.5, 96, 5, 'sinusal'),
-(8, 60, 90, '90/80', 35, 90, 8, 'sinusal'),
-(9, 20, 150, '130/85', 35, 77, 9, 'taquicardia'),
-(12, 49, 231, '135/83', 38.8, 85, 12, 'sinusal'),
-(13, 1, 131, '131', 131, 1311313, 13, 'sinusal');
+INSERT INTO `signos_pacientes` (`id`, `FR`, `FC`, `CO2`, `TA`, `Temperatura`, `SAT`, `id_paciente`, `ritmo`) VALUES
+(5, 18, 92, 38, '90/80', 36.5, 96, 5, 'sinusal'),
+(8, 60, 90, 38, '90/80', 35, 90, 8, 'sinusal'),
+(9, 20, 150, 36, '130/85', 35, 77, 9, 'taquicardia'),
+(12, 49, 231, 38, '135/83', 38.8, 85, 12, 'sinusal'),
+(13, 1, 131, 38, '131', 131, 1311313, 13, 'sinusal');
 
 -- --------------------------------------------------------
 -- 5. Tabla: pacientes

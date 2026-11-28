@@ -656,12 +656,30 @@ if (isset($_SESSION['correo'])) {
                                     </div>
                                 </div>
 
-                                <!-- 3. FR (CO2 / RR / Resp — 3º y 4º en el Monitor) -->
+                                <!-- 3. CO2 (Capnografía — 3º en el Monitor) -->
+                                <div class="vital-slider-row mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label mb-0 fw-semibold">
+                                            <i class="bi bi-cloud-haze2 me-1" style="color:#d4a017"></i>
+                                            3. Capnografía <small class="text-muted fw-normal">(CO₂ / Capno)</small>
+                                        </label>
+                                        <span class="vital-badge" id="co2-badge">
+                                            <span id="co2-display">--</span> mmHg
+                                        </span>
+                                    </div>
+                                    <input type="range" class="form-range vital-range" id="patientCo2" min="0" max="100"
+                                        step="1" value="38">
+                                    <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
+                                        <span>0</span><span style="color:#198754">Normal: 35–45 mmHg</span><span>100</span>
+                                    </div>
+                                </div>
+
+                                <!-- 4. FR (RR / Resp — 4º en el Monitor) -->
                                 <div class="vital-slider-row mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label class="form-label mb-0 fw-semibold">
                                             <i class="bi bi-lungs me-1" style="color:#17a2b8"></i>
-                                            3. Frecuencia Respiratoria <small class="text-muted fw-normal">(CO₂ / RR)</small>
+                                            4. Frecuencia Respiratoria <small class="text-muted fw-normal">(RR / Resp)</small>
                                         </label>
                                         <span class="vital-badge" id="fr-badge">
                                             <span id="fr-display">--</span> rpm
@@ -674,12 +692,12 @@ if (isset($_SESSION['correo'])) {
                                     </div>
                                 </div>
 
-                                <!-- 4. TA (NBP — Barra inferior morada en el Monitor) -->
+                                <!-- 5. TA (NBP — Barra inferior morada en el Monitor) -->
                                 <div class="vital-slider-row mb-4">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label class="form-label mb-0 fw-semibold">
                                             <i class="bi bi-droplet-half me-1" style="color:#6f42c1"></i>
-                                            4. Tensión Arterial <small class="text-muted fw-normal">(NBP)</small>
+                                            5. Tensión Arterial <small class="text-muted fw-normal">(NBP)</small>
                                         </label>
                                         <span class="vital-badge" id="ta-badge">
                                             <span id="ta-sis-display">--</span>/<span id="ta-dia-display">--</span> mmHg
@@ -703,12 +721,12 @@ if (isset($_SESSION['correo'])) {
                                     </div>
                                 </div>
 
-                                <!-- 5. Temperatura (Temp — Columna derecha en el Monitor) -->
+                                <!-- 6. Temperatura (Temp — Columna derecha en el Monitor) -->
                                 <div class="vital-slider-row mb-2">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <label class="form-label mb-0 fw-semibold">
                                             <i class="bi bi-thermometer-half me-1" style="color:#20c997"></i>
-                                            5. Temperatura <small class="text-muted fw-normal">(Temp °C)</small>
+                                            6. Temperatura <small class="text-muted fw-normal">(Temp °C)</small>
                                         </label>
                                         <span class="vital-badge" id="temp-badge">
                                             <span id="temp-display">--</span> °C
@@ -973,12 +991,12 @@ if (isset($_SESSION['correo'])) {
     <script>
         // ── Presets de ritmo ──────────────────────────────────────
         const RHYTHM_PRESETS_ADMIN = {
-            sinusal: { FC: 72, FR: 16, TA_sis: 120, TA_dia: 80, label: 'Ritmo Sinusal', color: '#198754' },
-            taquicardia: { FC: 150, FR: 20, TA_sis: 130, TA_dia: 85, label: 'Taquicardia', color: '#fd7e14' },
-            asistole: { FC: 0, FR: 0, TA_sis: 0, TA_dia: 0, label: 'Asistole', color: '#dc3545' },
-            fv: { FC: 0, FR: 0, TA_sis: 0, TA_dia: 0, label: 'Fibrilación Ventricular', color: '#dc3545' },
-            st_depresion: { FC: 72, FR: 18, TA_sis: 140, TA_dia: 90, label: 'ST Depresión', color: '#e65100' },
-            st_elevacion: { FC: 90, FR: 22, TA_sis: 160, TA_dia: 100, label: 'ST Elevación', color: '#c62828' },
+            sinusal: { FC: 72, CO2: 38, FR: 16, TA_sis: 120, TA_dia: 80, label: 'Ritmo Sinusal', color: '#198754' },
+            taquicardia: { FC: 150, CO2: 36, FR: 20, TA_sis: 130, TA_dia: 85, label: 'Taquicardia', color: '#fd7e14' },
+            asistole: { FC: 0, CO2: 0, FR: 0, TA_sis: 0, TA_dia: 0, label: 'Asistole', color: '#dc3545' },
+            fv: { FC: 0, CO2: 0, FR: 0, TA_sis: 0, TA_dia: 0, label: 'Fibrilación Ventricular', color: '#dc3545' },
+            st_depresion: { FC: 72, CO2: 38, FR: 18, TA_sis: 140, TA_dia: 90, label: 'ST Depresión', color: '#e65100' },
+            st_elevacion: { FC: 90, CO2: 35, FR: 22, TA_sis: 160, TA_dia: 100, label: 'ST Elevación', color: '#c62828' },
         };
 
         function applyRhythmAdmin(rhythm) {
@@ -993,6 +1011,7 @@ if (isset($_SESSION['correo'])) {
             };
 
             setSlider('patientFc', preset.FC);
+            if (preset.CO2 !== undefined) setSlider('patientCo2', preset.CO2);
             setSlider('patientFr', preset.FR);
             setSlider('patientTaSis', preset.TA_sis);
             setSlider('patientTaDia', preset.TA_dia);
