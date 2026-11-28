@@ -97,8 +97,7 @@ INSERT INTO `casos` (`id`, `nombre`, `visibilidad`, `clave`, `descripcion`, `mot
 (5, '02210769', 1, '', 'pierde la capacidad de respirar', 'Presenta problemas respiratorios', 16, '2026-04-09 06:24:12', 1),
 (8, '2210760', 1, '', 'Dolor en la espaldo', 'Dolor en la espalda', 15, '2026-05-07 03:48:56', 3),
 (9, '2210761', 1, '', 'El Paciente se queja de dolores fuertes y repentinos en el pecho', 'Dolores fuertes en el pecgo', 15, '2026-05-27 18:38:33', 4),
-(12, 'Crisis asmática severa en adulto joven', 1, '', 'Paciente masculino de 21 años ingresa a urgencias con cuadro de dificultad respiratoria de inicio súbito. A la exploración física presenta sibilancias audibles, uso de músculos accesorios y taquipnea severa. Refiere antecedente de asma desde la infancia y falta de respuesta a su inhalador de rescate.', 'Dificultad para respirar (disnea) aguda y sensación de ahogo.', 99, '2026-11-03 01:17:19', 6),
-(13, '3da', 1, '', 'd', 'dd', 99, '2026-11-03 16:51:07', 6);
+(12, 'Crisis asmática severa en adulto joven', 1, '', 'Paciente masculino de 21 años ingresa a urgencias con cuadro de dificultad respiratoria de inicio súbito. A la exploración física presenta sibilancias audibles, uso de músculos accesorios y taquipnea severa. Refiere antecedente de asma desde la infancia y falta de respuesta a su inhalador de rescate.', 'Dificultad para respirar (disnea) aguda y sensación de ahogo.', 99, '2026-11-03 01:17:19', 6);
 
 -- --------------------------------------------------------
 -- 4. Tabla: signos_pacientes
@@ -121,8 +120,7 @@ INSERT INTO `signos_pacientes` (`id`, `FR`, `FC`, `CO2`, `TA`, `Temperatura`, `S
 (5, 18, 92, 38, '90/80', 36.5, 96, 5, 'sinusal'),
 (8, 60, 90, 38, '90/80', 35, 90, 8, 'sinusal'),
 (9, 20, 150, 36, '130/85', 35, 77, 9, 'taquicardia'),
-(12, 49, 231, 38, '135/83', 38.8, 85, 12, 'sinusal'),
-(13, 1, 131, 38, '131', 131, 1311313, 13, 'sinusal');
+(12, 49, 231, 38, '135/83', 38.8, 85, 12, 'sinusal');
 
 -- --------------------------------------------------------
 -- 5. Tabla: pacientes
@@ -148,8 +146,7 @@ INSERT INTO `pacientes` (`id`, `nombre`, `sexo`, `edad`, `peso`, `altura`, `enfe
 (5, 'Jorge Ruiz', 'Hombre', 21, 68, 168, 'jsjsjsjs', 5, 5),
 (8, 'Jorge Alberto', 'Hombre', 22, 67.7, 170, 'Sin Antecedentes importantes', 8, 8),
 (9, 'Josue Antonio Ruiz', 'Hombre', 18, 68, 172, 'Sin antrecedentes Importantes', 9, 9),
-(12, 'absalon castellano', 'Hombre', 21, 71.4, 1.74, 'asma', 12, 12),
-(13, 'adsas', 'Mujer', 111, 122, 13, '1313', 13, 13);
+(12, 'Willy Tarin Castellano', 'Hombre', 21, 71.4, 1.74, 'asma', 12, 12);
 
 ALTER TABLE `signos_pacientes`
   ADD CONSTRAINT `signos_pacientes_ibfk_1` FOREIGN KEY (`id_paciente`) REFERENCES `pacientes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -208,8 +205,7 @@ INSERT INTO `preguntas` (`id`, `texto_pregunta`, `feedback`, `id_caso`) VALUES
 (28, 'jsjsjsjs', 'jsjsjsj', 8),
 (41, 'jsjsjsjs', 'jsjsjsjs', 9),
 (42, 'jsjsjsjs', 'jsjsjs', 9),
-(43, 'que tiene', 'listo', 12),
-(44, 's', 'ss', 13);
+(43, 'que tiene', 'listo', 12);
 
 -- --------------------------------------------------------
 -- 9. Tabla: incisos
@@ -235,9 +231,7 @@ INSERT INTO `incisos` (`id`, `id_pregunta`, `texto`, `correcto`) VALUES
 (87, 42, 'jsjsj', 1),
 (88, 42, 'jsjjss', 0),
 (89, 43, 'nada', 0),
-(90, 43, 'asma', 1),
-(91, 44, 'ss', 1),
-(92, 44, 's', 0);
+(90, 43, 'asma', 1);
 
 -- --------------------------------------------------------
 -- 10. Tabla: evaluaciones
