@@ -153,6 +153,26 @@ if ($caseId > 0) {
       </div>
     </div>
   </div>
+
+  <!-- Pantalla emergente de confirmacion formal estilo cimed -->
+  <div class="eval-confirm-overlay" id="eval-confirm-modal" style="display: none;">
+    <div class="eval-confirm-backdrop"></div>
+    <div class="eval-confirm-card" role="dialog" aria-modal="true">
+      <div class="eval-confirm-icon" id="eval-confirm-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <h3 id="eval-confirm-title">¿Confirmar acción?</h3>
+      <p id="eval-confirm-message">Esta acción no se puede deshacer.</p>
+      <div class="eval-confirm-actions">
+        <button type="button" class="btn-confirm-cancel" id="eval-confirm-btn-cancel">Cancelar</button>
+        <button type="button" class="btn-confirm-delete" id="eval-confirm-btn-ok">Eliminar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="js/evaluaciones.js"></script>

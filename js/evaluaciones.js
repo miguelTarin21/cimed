@@ -592,39 +592,160 @@ function renderHistory() {
   });
 }
 
-window.deleteEvaluation = async function(id) {
-  if (confirm('¿Seguro que deseas eliminar esta evaluación?')) {
-    try {
-      await fetch('BE/delete_evaluacion.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id })
-      });
-    } catch (err) {
-      console.log("Error al eliminar del servidor:", err);
+// pantalla emergente de confirmacion formal estilo cimed (evita popups nativos "localhost dice")
+function showCustomConfirm({
+  title = '¿Confirmar acción?',
+  message = '¿Estás seguro de que deseas continuar?',
+  confirmText = 'Eliminar',
+  cancelText = 'Cancelar',
+  isWarning = false
+} = {}) {
+  return new Promise((resolve) => {
+    let modal = document.getElementById('eval-confirm-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'eval-confirm-modal';
+      modal.className = 'eval-confirm-overlay';
+      modal.innerHTML = `
+        <div class="eval-confirm-backdrop"></div>
+        <div class="eval-confirm-card" role="dialog" aria-modal="true">
+          <div class="eval-confirm-icon" id="eval-confirm-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <h3 id="eval-confirm-title"></h3>
+          <p id="eval-confirm-message"></p>
+          <div class="eval-confirm-actions">
+            <button type="button" class="btn-confirm-cancel" id="eval-confirm-btn-cancel"></button>
+            <button type="button" class="btn-confirm-delete" id="eval-confirm-btn-ok"></button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
     }
-    evaluations = evaluations.filter(e => String(e.id) !== String(id));
-    localStorage.setItem('cimed_evaluations', JSON.stringify(evaluations));
-    populateSubgroupFilter();
-    renderHistory();
+
+    const titleEl = modal.querySelector('#eval-confirm-title');
+    const msgEl = modal.querySelector('#eval-confirm-message');
+    const btnCancel = modal.querySelector('#eval-confirm-btn-cancel');
+    const btnOk = modal.querySelector('#eval-confirm-btn-ok');
+    const iconEl = modal.querySelector('#eval-confirm-icon');
+    const backdrop = modal.querySelector('.eval-confirm-backdrop');
+
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (btnCancel) btnCancel.textContent = cancelText;
+    if (btnOk) btnOk.textContent = confirmText;
+
+    if (iconEl) {
+      if (isWarning) {
+        iconEl.classList.add('warning');
+      } else {
+        iconEl.classList.remove('warning');
+      }
+    }
+
+    modal.style.display = 'flex';
+
+    function cleanup(result) {
+      modal.style.display = 'none';
+      if (btnCancel) btnCancel.removeEventListener('click', onCancel);
+      if (btnOk) btnOk.removeEventListener('click', onOk);
+      if (backdrop) backdrop.removeEventListener('click', onCancel);
+      document.removeEventListener('keydown', onKey);
+      resolve(result);
+    }
+
+    function onCancel() {
+      cleanup(false);
+    }
+
+    function onOk() {
+      cleanup(true);
+    }
+
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        cleanup(false);
+      }
+    }
+
+    if (btnCancel) btnCancel.addEventListener('click', onCancel);
+    if (btnOk) btnOk.addEventListener('click', onOk);
+    if (backdrop) backdrop.addEventListener('click', onCancel);
+    document.addEventListener('keydown', onKey);
+
+    // Enfoque inicial en Cancelar por proteccion contra errores de dedo
+    if (btnCancel) btnCancel.focus();
+  });
+}
+
+window.deleteEvaluation = async function(id) {
+  const confirmed = await showCustomConfirm({
+    title: '¿Eliminar evaluación del equipo?',
+    message: 'Esta evaluación será eliminada de forma permanente del historial de este caso clínico. Esta acción no se puede deshacer.',
+    confirmText: 'Sí, eliminar',
+    cancelText: 'Cancelar',
+    isWarning: false
+  });
+
+  if (!confirmed) return;
+
+  try {
+    await fetch('BE/delete_evaluacion.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id })
+    });
+  } catch (err) {
+    console.log("Error al eliminar del servidor:", err);
   }
+  evaluations = evaluations.filter(e => String(e.id) !== String(id));
+  localStorage.setItem('cimed_evaluations', JSON.stringify(evaluations));
+  populateSubgroupFilter();
+  renderHistory();
 };
 
-function clearAllEvaluations() {
-  const msg = activeCaseId 
-    ? '¿Estás seguro de que deseas limpiar todas las evaluaciones de este caso para el semestre?' 
-    : '¿Estás seguro de que deseas limpiar todas las evaluaciones del semestre?';
-    
-  if (confirm(msg)) {
-    if (activeCaseId) {
-      evaluations = evaluations.filter(e => e.caseId && String(e.caseId) !== String(activeCaseId));
-    } else {
-      evaluations = [];
+async function clearAllEvaluations() {
+  const caseDesc = activeCaseName ? ` del caso "${activeCaseName}"` : '';
+  const confirmed = await showCustomConfirm({
+    title: '¿Limpiar evaluaciones del semestre?',
+    message: `Se eliminarán todas las evaluaciones registradas${caseDesc} para este semestre. Esta acción es definitiva y no se puede deshacer.`,
+    confirmText: 'Sí, limpiar todo',
+    cancelText: 'Cancelar',
+    isWarning: true
+  });
+
+  if (!confirmed) return;
+
+  const toDelete = activeCaseId 
+    ? evaluations.filter(e => e.caseId && String(e.caseId) === String(activeCaseId))
+    : [...evaluations];
+
+  for (const ev of toDelete) {
+    if (ev.id) {
+      try {
+        await fetch('BE/delete_evaluacion.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: ev.id })
+        });
+      } catch (err) {
+        console.log("Error al eliminar del servidor:", err);
+      }
     }
-    localStorage.setItem('cimed_evaluations', JSON.stringify(evaluations));
-    populateSubgroupFilter();
-    renderHistory();
   }
+
+  if (activeCaseId) {
+    evaluations = evaluations.filter(e => e.caseId && String(e.caseId) !== String(activeCaseId));
+  } else {
+    evaluations = [];
+  }
+  localStorage.setItem('cimed_evaluations', JSON.stringify(evaluations));
+  populateSubgroupFilter();
+  renderHistory();
 }
 
 document.addEventListener('DOMContentLoaded', init);
